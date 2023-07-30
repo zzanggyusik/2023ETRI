@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from human_info_manager import HumanInfoManager
+from parts_model_manager import PartsModelManager
 
 
 # Enable logging
@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     # scenario = sys.argv[1]
     # seed = sys.argv[2]
-    
-    HumanInfoManager().start_engine()
+
+    PartsModelManager().start_engine()
 
 if __name__ == '__main__':
     main()
