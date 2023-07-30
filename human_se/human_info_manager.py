@@ -1,4 +1,6 @@
 from pyevsim import BehaviorModelExecutor, SystemSimulator, Infinite
+from human_info_model import HumanInfoModel
+from human_parts_manager_model import HumanPartsManagerModel
 # from scenario_model import ScenarioModel
 # from mobilenet_model import MobileNetModel
 # from cnn_model import CNNModel
@@ -31,18 +33,22 @@ class HumanInfoManager():
         
         self.ai_engine.insert_input_port("humansim_start")
         
-        self.data_object = DataObject()
+        # self.data_object = DataObject()
         
-        scenario_model = ScenarioModel(0, Infinite, "scenario", "AIModelVerifier", self.ai_engine, self.data_object)
-        mobilenet_model = MobileNetModel(0, Infinite, "mobilenet", "AIModelVerifier", self.ai_engine, self.data_object)
-        cnn_model = CNNModel(0, Infinite, "cnn", "AIModelVerifier", self.ai_engine, self.data_object)
-        traffic_sign_model = TrafficSignModel(0, Infinite, "TrafficSignModel", "AIModelVerifier", self.ai_engine, self.data_object)
+        human_info_model = HumanInfoModel(instance_time = 0, destruct_time = Infinite, \
+                                          model_name = "Human Info Model", engine_name = "HumanSimulator", \
+                                            engine = self.ai_engine)
+        human_parts_manager_model = HumanPartsManagerModel(instance_time = 0, destruct_time = Infinite, \
+                                          model_name = "Human Parts Manager Model", engine_name = "HumanSimulator", \
+                                            engine = self.ai_engine)
         
+        # cnn_model = CNNModel(0, Infinite, "cnn", "AIModelVerifier", self.ai_engine, self.data_object)
+        # traffic_sign_model = TrafficSignModel(0, Infinite, "TrafficSignModel", "AIModelVerifier", self.ai_engine, self.data_object)
         
-        self.ai_engine.register_entity(scenario_model)
-        self.ai_engine.register_entity(mobilenet_model)
-        self.ai_engine.register_entity(cnn_model)
-        self.ai_engine.register_entity(traffic_sign_model)
+        self.ai_engine.register_entity(human_info_model)
+        self.ai_engine.register_entity(human_parts_manager_model)
+        # self.ai_engine.register_entity(cnn_model)
+        # self.ai_engine.register_entity(traffic_sign_model)
         
         self.ai_engine.coupling_relation(None, "scenario_start", scenario_model, "scenario_start")
         # self.ai_engine.coupling_relation(scenario_model, "process", mobilenet_model, "aimodel_start")

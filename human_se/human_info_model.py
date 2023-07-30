@@ -20,21 +20,21 @@ class HumanInfoModel(BehaviorModelExecutor):
             
             self.insert_output_port("process")
         
-            self.scenario_data = [] # 시나리오 레이블
-            self.model_predict = {} # 모델 예측 결과
+            # self.scenario_data = [] # 시나리오 레이블
+            # self.model_predict = {} # 모델 예측 결과
             
-            self.current_img = 0 # 현재 시나리오에서 진행중인 이미지
-            self.level = 0 # 현재 시나리오 단계
-            self.model_count = self.model_len # 추론이 완료된 모델 수 카운트
+            # self.current_img = 0 # 현재 시나리오에서 진행중인 이미지
+            # self.level = 0 # 현재 시나리오 단계
+            # self.model_count = self.model_len # 추론이 완료된 모델 수 카운트
             
-            # Get scenario label
-            for i in self.scenario:
-                self.scenario_data.append(i.split(".")[0])
+            # # Get scenario label
+            # for i in self.scenario:
+            #     self.scenario_data.append(i.split(".")[0])
             
-            self.scenario_length = len(self.scenario)
+            # self.scenario_length = len(self.scenario)
             
-            print(f"Scenario Model Activated!\nCurrent scenario length = {self.scenario_length}")
-            print(f"Num of Models Detected = {self.model_len}")
+            # print(f"Scenario Model Activated!\nCurrent scenario length = {self.scenario_length}")
+            # print(f"Num of Models Detected = {self.model_len}")
             
             
     # 실행시 내부 진행때 사용하면될듯
@@ -65,12 +65,8 @@ class HumanInfoModel(BehaviorModelExecutor):
                 self.level += 1
                 print("----------------------------------------------------------")
                 print(f"Scenario Processing! {self.level}")
-                X = cv2.imread(f'./scenario/{self.scenario[self.level - 1]}', cv2.IMREAD_GRAYSCALE)
-                X = cv2.cvtColor(X, cv2.COLOR_BGR2RGB)
                 
-                self.current_img = X
-                
-                msg = SysMessage(self.get_name(), "process")
+                msg = SysMessage(engine_name = self.get_name(), out_port = "process")
                 msg.insert({"scenario_length" : self.scenario_length , "current_level" : self.level, "img" : self.current_img})
                 
                 print("Scenario Model IDLE")
