@@ -1,0 +1,17 @@
+{
+    "host_config" : {
+        "host_ip" : "*",
+        "host_monitor_port" : 7777,
+        "host_controller_port" : 8888,
+        "task_done_message" : "Task Done"
+    },
+
+    "container_config" : {
+        "client_image" : "wsc_client",
+        "mount_dir_path" : "/Users/qsiik/Desktop/WSC_MultiSimulation/Server/Results"
+    },
+
+    "client_config" : {
+        "client_num" : 5
+    }
+}
