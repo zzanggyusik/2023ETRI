@@ -16,9 +16,6 @@ class SimulationPort():
     # partsModel_start = "partsModel_start"
     # partsModel_finish = "partsModel_finish"
     
-    
-    
-    
 class SimulationModelState():
     IDLE = "IDLE"
     PROCESS = "PROCESS"

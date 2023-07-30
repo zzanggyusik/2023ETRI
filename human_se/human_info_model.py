@@ -21,23 +21,6 @@ class HumanInfoModel(BehaviorModelExecutor):
             self.insert_input_port(SimulationPort.humanInfoModel_finish)
             
             self.insert_output_port("process")
-        
-            # self.scenario_data = [] # 시나리오 레이블
-            # self.model_predict = {} # 모델 예측 결과
-            
-            # self.current_img = 0 # 현재 시나리오에서 진행중인 이미지
-            # self.level = 0 # 현재 시나리오 단계
-            # self.model_count = self.model_len # 추론이 완료된 모델 수 카운트
-            
-            # # Get scenario label
-            # for i in self.scenario:
-            #     self.scenario_data.append(i.split(".")[0])
-            
-            # self.scenario_length = len(self.scenario)
-            
-            # print(f"Scenario Model Activated!\nCurrent scenario length = {self.scenario_length}")
-            # print(f"Num of Models Detected = {self.model_len}")
-            
             
     # 실행시 내부 진행때 사용하면될듯
     def ext_trans(self, port, msg):
@@ -47,20 +30,6 @@ class HumanInfoModel(BehaviorModelExecutor):
             
         elif port == SimulationPort.humanInfoModel_finish:
             self._cur_state = SimulationModelState.IDLE        
-        
-        # if port == "scenario_start":
-        #     if msg.retrieve()[0] != "scenario_start":
-                    
-        #         self.model_count += 1
-        #         self.model_predict.update(msg.retrieve()[0])
-
-        #     if self.model_count >= self.model_len:
-        #         print(f"All model({self.model_count}) Predicted")
-        #         self.model_count = 0
-        #         self._cur_state = "PROC"
-            
-        # elif port == "scenario_finish":
-        #     self._cur_state = "IDLE"
     
     # 데이터 전송시 사용하는 외부포트 (state, evt 적용)
     def output(self):

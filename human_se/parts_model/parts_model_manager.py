@@ -75,19 +75,3 @@ class PartsModelManager():
         self.parts_engine.insert_external_event(SimulationPort.partsModelHandler_start, SimulationPort.partsModelHandler_start)
         
         self.parts_engine.simulate()
-        
-            
-        
-            
-
-            
-        
-
-  
-
-  
-        
-    
-
-        
-

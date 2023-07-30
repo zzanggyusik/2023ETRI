@@ -18,7 +18,7 @@ class PartsModelHandler(BehaviorModelExecutor):
             # State 설정
             self.init_state(SimulationModelState.IDLE)
             self.insert_state(SimulationModelState.IDLE, Infinite)
-            self.insert_state(SimulationModelState.PROCESS, 1)
+            self.insert_state(SimulationModelState.PROCESS, 50000)
             self.insert_state(SimulationModelState.FINISH, 1)
 
             # Port 설정
