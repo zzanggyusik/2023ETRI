@@ -12,11 +12,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main() -> None:
-    scenario = sys.argv[1]
-    seed = sys.argv[2]
-
-
-
+    # scenario = sys.argv[1]
+    # seed = sys.argv[2]
+    
     HumanInfoManager().start_engine()
 
 if __name__ == '__main__':
