@@ -14,81 +14,108 @@ from stand_parts_model import StandPartsModel
 from sit_parts_model import SitPartsModel
 from pymongo import MongoClient
 from config import *
+import numpy as np
 
 class Executor():
     # def __init__(self, human_info, site_info, parts_list, simulation_number) -> None:
     def __init__(self) -> None:
-        self.container_id = "container1"
-        self.human_info = {"id": "hg", "smock": 1, \
+        self.container_name = "container1"
+        self.human_info = {"id": "person1", "smock": 1, \
                             "wbgt": 2, "met": 3, \
-                                "health": 100, "out": 1}
+                                "exist": 0, "hp": 0}
         
         self.site_info = {"site_id": "site1"}   
         
-        self.container_name = os.getenv("CONTAINER_NAME")
+        # self.container_name = os.getenv("CONTAINER_NAME")
         
         self.parts_list = ["sit_parts_model.simx", "stand_parts_model.simx"]
+        self.set_parts_list = []
+        
         self.simulation_number = 50
         self.seed = 34
         
         #self.mongo_client = MongoClient(host= "192.168.50.113", port= 27017) # Local
-        self.mongo_client = MongoClient(host= "host.docker.internal", port= 27017) # Docker
+        self.mongo_client = MongoClient(host= MONGODB_HOST, port= MONGODB_PORT) # Docker
         
         self.context = zmq.Context()
         self.zmq_dealer_init()
         self.zmq_sub_init()
 
-        self.dealer.send_string(self.container_name)
+        self.dealer.send_string(str(self.container_name))
+        
+        # self.seed = self.container_name.split("_")[1]
+        
+        np.random.seed(self.seed)
+        random_value = np.random.randint(2)
+        self.set_parts_list.append(self.parts_list[random_value])
         
     def run(self):
-        # try:
-        #     while True:
-        # print("Receive Ready...")
-        # json_data = json.loads(self.subscriber.recv_json())
-        
-        # self.set_init(json_data)                
-        
-        # Agent 등록
-        self.set_agent()
-        # Parts Model 등록
-        self.set_parts_model()
-        # BootLoader를 통해 Parts Model 연동
-        self.set_bootloader()
-        self.set_engine()
-        
-        # Start Simulation
-        start_time = time.time()
-        for i in range(self.simulation_number) : 
-            self.engine.run_multi_parts()
-            
-        end_time = time.time()
-        execution_time = end_time - start_time
-        
-        self.update_db()
-        
-        data = {
-            "client_name" : self.container_name,
-            "message" : "Task Done"
-        }
-        
-        self.dealer.send_string(json.dumps(data))
-        print(f'Work Finish {data}')
-        
-        # print(f"시뮬레이션 결과 : {self.human.agent}")
-        # print("병렬 실행 시간: {}초".format(execution_time))
-        # except KeyboardInterrupt:
-        #     print("Service Terminated")
+        try:
+            while True:
+                print("Receiving From Router..")
+                message = self.dealer.recv_multipart()
+                
+                json_data = json.loads(message[0].decode())
+                print((json_data))
+                
+                self.set_init(json_data)
+                
+                break
+                
+            while True:
+                print("Receive Ready...")
+                topic, json_data = self.demogrify(self.subscriber.recv_string())
+                
+                self.set_human_info(json_data)
+                
+                # self.set_init(json_data)                
+                
+                # Agent 등록
+                self.set_agent()
+                # Parts Model 등록
+                self.set_parts_model()
+                # BootLoader를 통해 Parts Model 연동
+                self.set_bootloader()
+                self.set_engine()
+                
+                # Start Simulation
+                start_time = time.time()
+                for i in range(self.simulation_number) : 
+                    self.engine.run_multi_parts()
+                    
+                end_time = time.time()
+                execution_time = end_time - start_time
+                
+                self.update_db()
+                
+                data = {
+                    "client_name" : self.container_name,
+                    "message" : "Task Done"
+                }
+                
+                self.dealer.send_string(json.dumps(data))
+                print(f'Work Finish {data}')
+                
+                break
+                # print(f"시뮬레이션 결과 : {self.human.agent}")
+                # print("병렬 실행 시간: {}초".format(execution_time))
+        except KeyboardInterrupt:
+            print("Service Terminated")
     
     def set_init(self, json_data) -> None:
-        self.container_id = json_data["container_id"]
-        self.human_info = json_data["human_info"]
-        self.site_info = json_data["site_info"]
+        # self.container_id = json_data["container_id"]
+        print(json_data)
+        self.human_info["id"] = json_data["human_id"]
+        self.site_info["site_id"] = json_data["site_id"]
         
-        self.parts_list = json_data["parts_list"]
-        self.simulation_number = json_data["simulation_number"]
+        # self.parts_list = json_data["parts_list"]
+        # self.simulation_number = json_data["simulation_number"]
         
         self.human_db = self.mongo_client[self.human_info['id']]
         
+    def set_human_info(self, json_data) -> None:
+        self.human_info = json_data
+        print(self.human_info)
     
     def set_agent(self) -> None:
         """
@@ -109,14 +136,14 @@ class Executor():
         """
         Boot Loader 빌드
         """
-        HumanBootLoader(self.parts_list).build_bootloader()
+        HumanBootLoader(self.set_parts_list).build_bootloader()
 
     def set_engine(self) -> None:
         """
         Execution Engine 설정
         """
         # Human 모델에 붙을 Parts model 수
-        self.engine = ExecutionEngine(len(self.parts_list))
+        self.engine = ExecutionEngine(len(self.set_parts_list))
         
         # Boot Loader 등록
         self.engine.append_bootloader("SIMULATE", "./bootloader/human_boot_loader.simx")
@@ -135,10 +162,11 @@ class Executor():
         db_name = f"human:{self.human_info['id']}"
         mongo_db = self.mongo_client[db_name]
         
-        coll_name = f"{self.container_id}_seed:{self.seed}"
+        coll_name = f"{self.container_name}_seed:{self.seed}"
         mongo_coll = mongo_db[coll_name]
         
         self.human.agent["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.human.agent["parts_lists"] = self.set_parts_list
         
         mongo_coll.insert_one(self.human.agent)
         
@@ -161,6 +189,12 @@ class Executor():
         self.subscriber.setsockopt_string(zmq.SUBSCRIBE, self.human_info["id"])
         print(f"Subscribe at {sub_url}")
         
+    def demogrify(self, topicmsg):
+        """ Inverse of mogrify() """
+        json0 = topicmsg.find('{')
+        topic = topicmsg[0:json0].strip()
+        msg = json.loads(topicmsg[json0:])
+        return topic, msg
         
 if __name__ == "__main__":
     Executor().run()

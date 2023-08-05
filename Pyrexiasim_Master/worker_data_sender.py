@@ -37,9 +37,10 @@ class WorkerDataSender(BehaviorModelExecutor):
 
         context = zmq.Context()
         self.socket = context.socket(zmq.PUB)
-        self.socket.bind("tcp://*:5556")
+        pub_url = f"tcp://{PYZMQ.data_sender_host}:{PYZMQ.data_sender_port}"
+        self.socket.bind(pub_url)
 
-        print("Data Sender Init")
+        print(f"Data Sender Init at {pub_url}")
 
     def ext_trans(self, port, msg):
         pass
