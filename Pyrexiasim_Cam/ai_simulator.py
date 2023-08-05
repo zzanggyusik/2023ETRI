@@ -10,6 +10,7 @@ def cam_open():
     cam = cv2.VideoCapture(0)
     
     qr_data = []
+    updated_id = []
 
     i = 0
     while(cam.isOpened()): #카메라 켜놓는 부분
@@ -27,19 +28,27 @@ def cam_open():
             x, y, w, h = d.rect
 
             barcode_data = d.data.decode("utf-8")
-            barcode_data = json.dumps(barcode_data)
+            barcode_data = json.loads(barcode_data)
             barcode_type = d.type
 
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
             text = f'{barcode_data} ({barcode_type})'
             cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
             
-            print(barcode_data)
+            print(f'barcode_data : {barcode_data}')
             
-            if barcode_data not in qr_data:
+            if barcode_data['id'] not in updated_id:
                 qr_data.append(barcode_data)
+                db_updater(qr_data)
+                updated_id.append(barcode_data['id'])
+            elif barcode_data['id'] in updated_id and barcode_data not in qr_data:
+                qr_data.remove(next(item for item in qr_data if item["id"] == barcode_data['id']))
+                qr_data.append(barcode_data)
+                db_updater(qr_data)
                 
-            print(qr_data)
+            print(f'qr_data : {qr_data}')
+            
+            db_updater(qr_data)
 
         cv2.imshow('img', img)
         
@@ -58,7 +67,9 @@ def db_updater(qr_data):
     
     for i in range(len(qr_data)):
         if qr_data[i]['id'] in HUMAN_LIST:
-            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'exist':qr_data[i]['exist']})
+            print(qr_data[i])
+            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'$set': {'exist':int(qr_data[i]['exist'])}})
+            print('test')
             
             
 
