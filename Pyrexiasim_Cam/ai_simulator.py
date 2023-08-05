@@ -41,6 +41,7 @@ def cam_open():
                 qr_data.append(barcode_data)
                 db_updater(qr_data)
                 updated_id.append(barcode_data['id'])
+                
             elif barcode_data['id'] in updated_id and barcode_data not in qr_data:
                 qr_data.remove(next(item for item in qr_data if item["id"] == barcode_data['id']))
                 qr_data.append(barcode_data)
@@ -68,11 +69,9 @@ def db_updater(qr_data):
     for i in range(len(qr_data)):
         if qr_data[i]['id'] in HUMAN_LIST:
             print(qr_data[i])
-            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'$set': {'exist':int(qr_data[i]['exist'])}})
+            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'$set': {'exist':int(qr_data[i]['exist']), 'site' : SITE}})
             print('test')
             
-            
-
 def main():
     cam_open()
     

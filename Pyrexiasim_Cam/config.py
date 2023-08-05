@@ -1,6 +1,8 @@
 from enum import Enum
 #from instance.config import *
     
+SITE = 'site1'   
+    
 class DBConfig():
     ip = '192.168.50.113'
     port = 27017

@@ -168,11 +168,12 @@ class Executor():
         db_name = f"human:{self.human_info['id']}"
         mongo_db = self.mongo_client[db_name]
         
-        coll_name = f"{self.container_name}_seed:{self.seed}"
+        coll_name = f"{self.container_name}_{self.site_info['site_id']}_seed:{self.seed}"
         mongo_coll = mongo_db[coll_name]
         
         self.human.agent["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.human.agent["parts_lists"] = self.set_parts_list
+        self.human.agent["site"] = self.site_info["site_id"]
         
         mongo_coll.insert_one(self.human.agent)
         
