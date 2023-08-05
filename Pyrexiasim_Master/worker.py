@@ -10,6 +10,7 @@ from config import *
 import pymongo
 import datetime
 import logging
+import time
 
 ModelManager = TypeVar('ModelManager')
 class WorkerModel(BehaviorModelExecutor):
@@ -49,7 +50,7 @@ class WorkerModel(BehaviorModelExecutor):
         if port == 'env':
             self.env_info = msg.retrieve()[0]
             self._cur_state = "MONITOR"
-        pass
+        
     
     def output(self):
         if self._cur_state == "REQ_ENV":
@@ -74,22 +75,31 @@ class WorkerModel(BehaviorModelExecutor):
             else:
                 print("Human Detected")
                 print("Container Created")
-                # msg = SysMessage(self.get_name(), self.get_name())
-                # print(f'@@@@@@ {self.get_name()}')
-                # msg.insert(human_info)
-                #저장할 것 다 저장하고 worker_remove(update해야함) ->worker remove에서 해줘야함, 
-                # msg_lst.append(msg)
-                # print('this is test')
+                
+                msg = SysMessage(self.get_name(), "containermodel_start")
+                # TODO : Create Container
+
+                while True:
+                    # TODO : Router Send Data, Wait Receive
+                    pass 
+                
+                # self._cur_state = "WAIT"
+    
+    
+        elif self._cur_state == "WAIT":
+            print("Hello, Created container")
+                
             
             #컨테이너 모니터로부터 종료 응답 대기 후 컨테이너 삭제
 
-            return msg_lst
+        return msg_lst
 
-        return None
 
 
     def int_trans(self):
         if self._cur_state == "MONITOR":
             self._cur_state = "MONITOR"
         elif self._cur_state == "REQ_ENV":
+            self._cur_state = "WAIT"
+        elif self._cur_state == "WAIT":
             self._cur_state = "WAIT"
