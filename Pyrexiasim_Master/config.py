@@ -41,6 +41,9 @@ class WorkerConfig():
     
     client_img = ''
     
+    router_ip = '*'
+    router_port = 9999
+    
 class WorkerRemoveConfig():
     typevar = 'ModelManager'
     

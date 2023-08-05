@@ -4,8 +4,10 @@ from pyevsim.system_message import SysMessage
 from pyevsim.definition import *
 
 from typing import TypeVar
+import zmq
 import random
 import sys, os
+import json
 
 from config import * 
 
@@ -24,6 +26,12 @@ class WorkerModel(BehaviorModelExecutor):
         self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
         self.human_info_db = pymongo.MongoClient(self.db_url)[DBConfig.human_db_name]
         self.human_id = human_id
+        
+        self.context = zmq.Context()
+        self.socket = self.context.socket(zmq.ROUTER)
+        self.socket.bind(f'tcp://{WorkerConfig.router_ip}:{WorkerConfig.router_port}')
+        
+        print(f'\n@@{human_id} Router Bined tcp://{WorkerConfig.router_ip}:{WorkerConfig.router_port} Success!! @@')
 
         # Model Management
         self.insert_input_port(mname)
@@ -81,19 +89,44 @@ class WorkerModel(BehaviorModelExecutor):
                 msg = SysMessage(self.get_name(), "containermodel_start")
                 # TODO : Create Container
                 
-                self.run_containers(human_info['id'])
+                self.container_state = self.run_containers(human_info['id'])
 
                 while True:
                     # TODO : Router Send Data, Wait Receive
-                    pass 
-                
-                # self._cur_state = "WAIT"
+                    message = self.socket.recv_multipart()
+                    identity, content = message
+                    
+                    print(f'From Client Dealer {identity} Received Message : {message}')
+                    
+                    if content.decode() in self.container_state.keys():
+                        self.container_state[content.decode()] = 1
+                        
+                    if all(value == 1 for value in self.container_state.values()):
+                        break
+                        
+                self._cur_state = "WAIT"
     
     
         elif self._cur_state == "WAIT":
-            print("Hello, Created container")
-                
+            print("Waiting Untill Task Done")
             
+            while True:
+                message = self.socket.recv_multipart()
+                identity, content = message
+                content = json.loads(content.decode())
+                container_name = content["client_name"]
+                monitor_state = content["message"]
+                        
+                print(f'\nFrom {container_name} Dealer Received Message : {content}')
+                
+                if monitor_state == 'Task Done':
+                    print(f'{container_name} monitor state : {monitor_state}')
+                    self.stop_container(container_name)
+                    self.container_state[container_name] = 0
+                    
+                if all(value == 0 for value in self.container_state.values()):
+                    break 
+                
             #컨테이너 모니터로부터 종료 응답 대기 후 컨테이너 삭제
 
         return msg_lst
@@ -107,6 +140,8 @@ class WorkerModel(BehaviorModelExecutor):
             self._cur_state = "WAIT"
 
     def run_containers(self, id):
+        running_container = {}
+        
         start_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
                 
         print('\n@@@@ Start Running Coniners...')
@@ -121,8 +156,24 @@ class WorkerModel(BehaviorModelExecutor):
                 client_name = f'{id}_{seed}'
                 os.system(f"docker run -v {dir_path}:/Result -d  -e CONTAINER_NAME={client_name} --name {client_name} {WorkerConfig.client_img}")
                 
+                # Container state 확인용
+                running_container[client_name] = 0
+                
             except :
                 print(f'Already using seed {seed}')
         
         print("@@@@ All container Is Running !!!\n")
+        
+        return running_container
+    
+    def stop_container(self, container_name):
+        print(f'\nStopping {container_name} ...')
+        
+        os.system(f"docker stop {container_name}") # Docker Stop
+        
+        print(f'Deleting {container_name}...')
+        
+        os.system(f'docker rm {container_name}') # Docker rm
+        
+        print(f'{container_name} Deleted!!\n')
     
