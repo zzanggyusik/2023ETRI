@@ -142,7 +142,7 @@ class WorkerModel(BehaviorModelExecutor):
     def run_containers(self, id):
         running_container = {}
         
-        start_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        start_timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
                 
         print('\n@@@@ Start Running Coniners...')
 

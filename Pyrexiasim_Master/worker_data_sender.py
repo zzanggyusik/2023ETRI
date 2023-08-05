@@ -9,6 +9,7 @@ import sys, os
 
 from config import * 
 
+import json
 import pymongo
 import datetime
 import logging
@@ -21,6 +22,8 @@ class WorkerDataSender(BehaviorModelExecutor):
         
         self.worker_info_map = worker_info_map
         
+        self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
+        self.human_info_db = pymongo.MongoClient(self.db_url)[DBConfig.human_db_name]        
 
         # Model Management
         self.insert_input_port("datasender_start")
@@ -36,13 +39,19 @@ class WorkerDataSender(BehaviorModelExecutor):
         self.socket = context.socket(zmq.PUB)
         self.socket.bind("tcp://*:5556")
 
+        print("Data Sender Init")
 
     def ext_trans(self, port, msg):
         pass
         
 
     def output(self):
-        pass
+        if self.worker_info_map is not None:
+            for key in self.worker_info_map.keys():
+                human_info = self.human_info_db[DBConfig.human_info_collection].find_one({'id':key})
+                del human_info["_id"]
+                print(f"Published to {key} : {human_info}")
+                self.socket.send_string(self.mogrify(key, human_info))
 
     def int_trans(self):
         if self._cur_state == "IDLE":
@@ -50,4 +59,5 @@ class WorkerDataSender(BehaviorModelExecutor):
         elif self._cur_state == "PROC":
             self._cur_state == "PROC"
 
-    
+    def mogrify(self, topic, msg):
+        return topic + ' ' + json.dumps(msg)
