@@ -1,6 +1,7 @@
 from base.parts_model import PartsModel
 import dill
 import time
+import pymongo
 
 class StandPartsModel(PartsModel):
     def __init__(self, simulation_number):
@@ -13,7 +14,7 @@ class StandPartsModel(PartsModel):
         self.agent["health"] -= 4
         print("Stand..")
         print("current state", self.agent)
-        print("env test", self.environment)
+        # print("env test", self.environment)
         print("")
         
         if self.count == self._simulation_number:
