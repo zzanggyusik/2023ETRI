@@ -42,10 +42,11 @@ class WorkerMoniorModel(BehaviorModelExecutor):
     def output(self):
         # Get All Worker
         if self._cur_state == "MONITOR":
-            cursor = self.db['sim_sensing_info'].find({})
+            cursor = self.human_info_db[DBConfig.human_info_collection].find({})
             for doc in cursor:
-                if not self.model_manager.check_worker_in_map(doc['human_id']):
-                    self.model_manager.insert_worker(doc['human_id'])
+                if not self.model_manager.check_worker_in_map(doc['id']):
+                    self.model_manager.insert_worker(doc['id'])
+                    print(f'Insert Data {doc["id"]}')
             return None
         
 

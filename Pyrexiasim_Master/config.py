@@ -1,5 +1,5 @@
 from enum import Enum
-from instance.config import *
+#from instance.config import *
 
 class Init():
     enmae = 'pyrexiasim'

@@ -35,7 +35,7 @@ class WorkerModel(BehaviorModelExecutor):
         self.insert_output_port("health_info")
 
         # State
-        self.init_state("REQ_ENV")
+        self.init_state("MONITOR")
         self.insert_state("REQ_ENV", 0)
         self.insert_state("WAIT", Infinite)
         self.insert_state("MONITOR", 1)
@@ -54,6 +54,7 @@ class WorkerModel(BehaviorModelExecutor):
     def output(self):
         if self._cur_state == "REQ_ENV":
             return SysMessage(self.get_name(), "req_env")
+        
         elif self._cur_state == "MONITOR":
             # TODO: Check Health
             #print(f"{self.get_name()} checking hsinfo")
@@ -62,8 +63,9 @@ class WorkerModel(BehaviorModelExecutor):
 
             msg_lst = []
             # Check validity
-            if self.hinfo['human_exist'] == 0:
+            if self.hinfo['exist'] == 0:
                 msg = SysMessage(self.get_name(), self.get_name())
+                print(f'@@@@@@ {self.get_name()}')
                 msg.insert(self.hinfo)
                 #저장할 것 다 저장하고 worker_remove(update해야함) ->worker remove에서 해줘야함, 
                 msg_lst.append(msg)

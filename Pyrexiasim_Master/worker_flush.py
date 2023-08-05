@@ -23,6 +23,7 @@ class WorkerFlushModel(BehaviorModelExecutor):
             data = msg.retrieve()[0]
 
             key, value = data
+            print(f'@@@ {key} {value}')
             if key in self.log_map:
                 self.log_map[key].append(value)
             else:
@@ -30,9 +31,11 @@ class WorkerFlushModel(BehaviorModelExecutor):
                 
         elif port == WorkerFlushConfig.flush_port:
             data = msg.retrieve()[0]
-            with open(f"{data['human_id']}.log", "w") as f:
-                f.writelines(self.log_map[data['human_id']])
-                del self.log_map[data['human_id']]
+            print(data)
+            print(self.log_map)
+            with open(f"{data['id']}.log", "w") as f:
+                f.writelines(self.log_map[data['id']])
+                del self.log_map[data['id']]
     
     def output(self):
         pass
