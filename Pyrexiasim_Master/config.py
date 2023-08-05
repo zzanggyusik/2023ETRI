@@ -1,4 +1,5 @@
 from enum import Enum
+from instance.config import *
 
 class Init():
     enmae = 'pyrexiasim'
@@ -59,4 +60,4 @@ class DBConfig():
     #def get_human_info()
     
 class TelegramConfig():
-    token = ''
+    token = TELEGRAM_TOKEN

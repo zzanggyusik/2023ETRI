@@ -5,6 +5,8 @@ from pyevsim.definition import *
 
 from typing import TypeVar
 
+from config import * 
+
 import pymongo
 import datetime
 import logging

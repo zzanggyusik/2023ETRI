@@ -7,7 +7,7 @@ from worker_remove import WorkerRemoveModel
 from worker_flush import WorkerFlushModel
 from telegram_manager import TelegramManagerModel
 
-from instance.config import *
+from config import *
 
 import pymongo
 

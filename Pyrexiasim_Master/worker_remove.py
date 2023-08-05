@@ -3,7 +3,7 @@ from pyevsim.system_simulator import SystemSimulator
 from pyevsim.system_message import SysMessage
 from pyevsim.definition import *
 
-from instance.config import *
+from config import *
 
 from typing import TypeVar
 
