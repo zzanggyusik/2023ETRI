@@ -5,5 +5,4 @@ class HumanAgent(AgentModel):
         super().__init__()
         self.agent = {"id": human_info["id"], "smock": human_info["smock"], \
             "wbgt": human_info["wbgt"], "met": human_info["met"], \
-                "health": human_info["health"], "out": human_info["out"], \
-                    "simulation_number": human_info["simulation_number"]}
+                "health": human_info["health"], "out": human_info["out"]}
