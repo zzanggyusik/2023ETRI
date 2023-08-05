@@ -43,6 +43,14 @@ class Executor():
     def run(self):
         try:
             while True:
+                print("Receiving From Router..")
+                message = self.dealer.recv_multipart()
+                print(message)
+                # identity, content = message    
+                # print(content.decode())
+                print(message.decode("utf-8"))
+                
+            while True:
                 print("Receive Ready...")
                 topic, json_data = self.demogrify(self.subscriber.recv_string())
                 

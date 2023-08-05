@@ -89,7 +89,7 @@ class WorkerModel(BehaviorModelExecutor):
                 msg = SysMessage(self.get_name(), "containermodel_start")
                 # TODO : Create Container
                 
-                self.container_state = self.run_containers(human_info['id'])
+                # self.container_state = self.run_containers(human_info['id'])
 
                 while True:
                     # TODO : Router Send Data, Wait Receive
@@ -98,17 +98,17 @@ class WorkerModel(BehaviorModelExecutor):
                     
                     print(f'From Client Dealer {identity} Received Message : {message}')
                     
-                    if content.decode() in self.container_state.keys():
-                        self.container_state[content.decode()] = 1
-                        response = {
-                            'human_id' : human_info['id'],
-                            'site_id' : 'site1'
-                        }
-                        self.socket.send_multipart([identity, json.dumps(response).encode()])
-                        print(f'Sent to {content.decode()} : {response}')
+                    # if content.decode() in self.container_state.keys():
+                    #     self.container_state[content.decode()] = 1
+                    response = {
+                        'human_id' : human_info['id'],
+                        'site_id' : 'site1'
+                    }
+                    self.socket.send_multipart([identity, json.dumps(response).encode()])
+                    print(f'Sent to {content.decode()} : {response}')
                         
-                    if all(value == 1 for value in self.container_state.values()):
-                        break
+                    # if all(value == 1 for value in self.container_state.values()):
+                    #     break
                         
                 self._cur_state = "WAIT"
     
