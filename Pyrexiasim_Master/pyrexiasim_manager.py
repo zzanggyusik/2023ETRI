@@ -7,6 +7,7 @@ from worker_monitor import WorkerMoniorModel
 from worker_remove import WorkerRemoveModel
 from worker_flush import WorkerFlushModel
 from telegram_manager import TelegramManagerModel
+from worker_data_sender import WorkerDataSender
 
 from config import *
 
@@ -16,10 +17,12 @@ class ModelManager():
     def __init__(self, inst_t, dest_t, mname, ename, engine:SysExecutor, tmanager:TelegramManagerModel):
         self.engine = engine
         self.tele_manager = tmanager
-
+        self.worker_info_map = {}
+        
         self.worker_monitor_model = WorkerMoniorModel(inst_t, dest_t, mname, ename, self)
         self.worker_remove_model = WorkerRemoveModel(inst_t, dest_t, mname, ename, self)
         self.worker_flush_model = WorkerFlushModel(inst_t, dest_t, WorkerFlushConfig.model_name, ename)
+        self.worker_data_sender = WorkerDataSender(inst_t, dest_t, mname, ename, self.worker_info_map)
         
         #self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}@{DBConfig.pwd}"
         self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
@@ -31,8 +34,7 @@ class ModelManager():
         self.engine.register_entity(self.worker_remove_model)
         self.engine.register_entity(self.worker_monitor_model)
         self.engine.register_entity(self.tele_manager)
-
-        self.worker_info_map = {}
+        self.engine.register_entity(self.worker_data_sender)
 
     def check_worker_in_map(self, human_id) -> bool:
         if human_id in self.worker_info_map:

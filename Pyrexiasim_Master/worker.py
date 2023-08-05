@@ -78,7 +78,6 @@ class WorkerModel(BehaviorModelExecutor):
             if human_info['exist'] == 0:
                 ## Delete Worker Model
                 msg = SysMessage(self.get_name(), self.get_name())
-                # msg = SysMessage(self.get_name(), "health_info")
                 msg.insert(human_info)
                 msg_lst.append(msg)
                 
@@ -93,39 +92,54 @@ class WorkerModel(BehaviorModelExecutor):
 
                 while True:
                     # TODO : Router Send Data, Wait Receive
-                    message = self.socket.recv_multipart()
+                    message =  self.socket.recv_multipart()
                     identity, content = message
                     
                     print(f'From Client Dealer {identity} Received Message : {message}')
                     
                     if content.decode() in self.container_state.keys():
-                        self.container_state[content.decode()] = 1
-                        
+                         self.container_state[content.decode()] = 1
+                    response = {
+                        'human_id' : human_info['id'],
+                        'site_id' : 'site1'
+                    }
+                    self.socket.send_multipart([identity, json.dumps(response).encode()])
+                    print(f'Sent to {content.decode()} : {response}')
+                                           
                     if all(value == 1 for value in self.container_state.values()):
                         break
+                                       
+                while True:
+                    print("Waiting Untill Task Done")
+                    message = self.socket.recv_multipart()
+                    identity, content = message
+                    print(message)
+                    print(content)
+                    content = json.loads(content.decode())
+                    container_name = content["client_name"]
+                    response = 'OK'
+                    self.socket.send_string(response)
+                    monitor_state = content["message"]
+                            
+                    print(f'\nFrom {container_name} Dealer Received Message : {content}')
+                    
+                    if monitor_state == 'Task Done':
+                        print(f'{container_name} monitor state : {monitor_state}')
+                        #self.stop_container(container_name)
+                        self.container_state[container_name] = 0
+                        print(self.container_state)
                         
+                    if all(value == 0 for value in self.container_state.values()):
+                        for key, values in self.container_state.items():
+                            self.stop_container(key)
+                        break 
+                            
                 self._cur_state = "WAIT"
     
     
         elif self._cur_state == "WAIT":
-            print("Waiting Untill Task Done")
+            pass
             
-            while True:
-                message = self.socket.recv_multipart()
-                identity, content = message
-                content = json.loads(content.decode())
-                container_name = content["client_name"]
-                monitor_state = content["message"]
-                        
-                print(f'\nFrom {container_name} Dealer Received Message : {content}')
-                
-                if monitor_state == 'Task Done':
-                    print(f'{container_name} monitor state : {monitor_state}')
-                    self.stop_container(container_name)
-                    self.container_state[container_name] = 0
-                    
-                if all(value == 0 for value in self.container_state.values()):
-                    break 
                 
             #컨테이너 모니터로부터 종료 응답 대기 후 컨테이너 삭제
 
@@ -142,7 +156,7 @@ class WorkerModel(BehaviorModelExecutor):
     def run_containers(self, id):
         running_container = {}
         
-        start_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        start_timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
                 
         print('\n@@@@ Start Running Coniners...')
 
@@ -152,24 +166,24 @@ class WorkerModel(BehaviorModelExecutor):
         
         for i in range(WorkerConfig.num_contariner):
             try : 
-                seed = random.randint(0,100)
-                client_name = f'{id}_{seed}'
+                self.seed = random.randint(0,100)
+                client_name = f'{id}_{self.seed}'
                 os.system(f"docker run -v {dir_path}:/Result -d  -e CONTAINER_NAME={client_name} --name {client_name} {WorkerConfig.client_img}")
                 
                 # Container state 확인용
                 running_container[client_name] = 0
                 
             except :
-                print(f'Already using seed {seed}')
+                print(f'Already using seed {self.seed}')
         
         print("@@@@ All container Is Running !!!\n")
         
         return running_container
     
     def stop_container(self, container_name):
-        print(f'\nStopping {container_name} ...')
+        print(f'\nKilling {container_name} ...')
         
-        os.system(f"docker stop {container_name}") # Docker Stop
+        os.system(f"docker kill {container_name}") # Docker Stop
         
         print(f'Deleting {container_name}...')
         

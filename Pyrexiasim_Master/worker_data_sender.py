@@ -9,11 +9,13 @@ import sys, os
 
 from config import * 
 
+import json
 import pymongo
 import datetime
 import logging
 import time
 import zmq
+import threading
 
 class WorkerDataSender(BehaviorModelExecutor):
     def __init__(self, inst_t, dest_t, mname, ename, worker_info_map):
@@ -21,6 +23,8 @@ class WorkerDataSender(BehaviorModelExecutor):
         
         self.worker_info_map = worker_info_map
         
+        self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
+        self.human_info_db = pymongo.MongoClient(self.db_url)[DBConfig.human_db_name]        
 
         # Model Management
         self.insert_input_port("datasender_start")
@@ -34,20 +38,37 @@ class WorkerDataSender(BehaviorModelExecutor):
 
         context = zmq.Context()
         self.socket = context.socket(zmq.PUB)
-        self.socket.bind("tcp://*:5556")
+        pub_url = f"tcp://{PYZMQ.data_sender_host}:{PYZMQ.data_sender_port}"
+        self.socket.bind(pub_url)
 
+        print(f"Data Sender Init at {pub_url}")
 
     def ext_trans(self, port, msg):
         pass
         
 
     def output(self):
-        pass
-
+        publish = threading.Thread(target=self.zmq_publish)
+        publish.start()
+        
+        self._cur_state = "IDLE"
+        
     def int_trans(self):
         if self._cur_state == "IDLE":
             self._cur_state = "IDLE"
         elif self._cur_state == "PROC":
             self._cur_state == "PROC"
 
+    def mogrify(self, topic, msg):
+        return topic + ' ' + json.dumps(msg)
     
+    def zmq_publish(self):
+        while True:
+            if self.worker_info_map is not None:
+                for key in self.worker_info_map.keys():
+                    human_info = self.human_info_db[DBConfig.human_info_collection].find_one({'id':key})
+                    del human_info["_id"]
+                    print(f"Published to {key} : {human_info}")
+                    self.socket.send_string(self.mogrify(key, human_info))        
+                    
+            time.sleep(1)

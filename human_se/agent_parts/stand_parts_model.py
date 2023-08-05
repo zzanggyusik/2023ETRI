@@ -9,7 +9,7 @@ class StandPartsModel(PartsModel):
         
     def run_parts(self):
         # time.sleep(0.5)
-        self.agent["health"] -= 4
+        self.agent["hp"] -= 4
         print("Stand..")
         print("current state", self.agent)
         print("current count", self.agent["simulation_number"])
