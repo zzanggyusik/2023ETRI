@@ -60,4 +60,4 @@ class DBConfig():
     #def get_human_info()
     
 class TelegramConfig():
-    token = TELEGRAM_TOKEN
+    token = '5853861114:AAHa1oCKnCukwT866Wm6rd8cWh7YL-pg3gA'
