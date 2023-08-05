@@ -69,7 +69,7 @@ def db_updater(qr_data):
     for i in range(len(qr_data)):
         if qr_data[i]['id'] in HUMAN_LIST:
             print(qr_data[i])
-            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'$set': {'exist':int(qr_data[i]['exist']), 'site' : SITE}})
+            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'$set': {'exist':int(qr_data[i]['exist']), 'site': "site1"}})
             print('test')
             
 def main():
