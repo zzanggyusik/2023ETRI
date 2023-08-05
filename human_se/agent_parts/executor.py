@@ -19,14 +19,14 @@ import numpy as np
 class Executor():
     # def __init__(self, human_info, site_info, parts_list, simulation_number) -> None:
     def __init__(self) -> None:
-        self.container_name = "container1"
+        #self.container_name = "container1"
         self.human_info = {"id": "person1", "smock": 1, \
                             "wbgt": 2, "met": 3, \
                                 "exist": 0, "hp": 0}
         
         self.site_info = {"site_id": "site1"}   
         
-        # self.container_name = os.getenv("CONTAINER_NAME")
+        self.container_name = os.getenv("CONTAINER_NAME")
         
         self.parts_list = ["sit_parts_model.simx", "stand_parts_model.simx"]
         self.set_parts_list = []
@@ -43,7 +43,9 @@ class Executor():
 
         self.dealer.send_string(str(self.container_name))
         
-        # self.seed = self.container_name.split("_")[1]
+        
+        self.seed = int(self.container_name.split('_')[1])
+        
         
         np.random.seed(self.seed)
         random_value = np.random.randint(2)
@@ -93,10 +95,14 @@ class Executor():
                     "message" : "Task Done"
                 }
                 
-                self.dealer.send_string(json.dumps(data))
-                print(f'Work Finish {data}')
+                print('@@@Log 1')
                 
-                break
+                while True:
+                    self.dealer.send_string(json.dumps(data))
+                    
+                    print(f'Work Finish {data}')
+                
+                    time.sleep(0.5)
                 # print(f"시뮬레이션 결과 : {self.human.agent}")
                 # print("병렬 실행 시간: {}초".format(execution_time))
         except KeyboardInterrupt:

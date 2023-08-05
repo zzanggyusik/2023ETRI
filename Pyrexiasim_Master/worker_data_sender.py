@@ -15,6 +15,7 @@ import datetime
 import logging
 import time
 import zmq
+import threading
 
 class WorkerDataSender(BehaviorModelExecutor):
     def __init__(self, inst_t, dest_t, mname, ename, worker_info_map):
@@ -47,13 +48,11 @@ class WorkerDataSender(BehaviorModelExecutor):
         
 
     def output(self):
-        if self.worker_info_map is not None:
-            for key in self.worker_info_map.keys():
-                human_info = self.human_info_db[DBConfig.human_info_collection].find_one({'id':key})
-                del human_info["_id"]
-                print(f"Published to {key} : {human_info}")
-                self.socket.send_string(self.mogrify(key, human_info))
-
+        publish = threading.Thread(target=self.zmq_publish)
+        publish.start()
+        
+        self._cur_state = "IDLE"
+        
     def int_trans(self):
         if self._cur_state == "IDLE":
             self._cur_state = "IDLE"
@@ -62,3 +61,14 @@ class WorkerDataSender(BehaviorModelExecutor):
 
     def mogrify(self, topic, msg):
         return topic + ' ' + json.dumps(msg)
+    
+    def zmq_publish(self):
+        while True:
+            if self.worker_info_map is not None:
+                for key in self.worker_info_map.keys():
+                    human_info = self.human_info_db[DBConfig.human_info_collection].find_one({'id':key})
+                    del human_info["_id"]
+                    print(f"Published to {key} : {human_info}")
+                    self.socket.send_string(self.mogrify(key, human_info))        
+                    
+            time.sleep(1)

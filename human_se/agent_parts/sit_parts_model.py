@@ -13,7 +13,7 @@ class SitPartsModel(PartsModel):
         # self.agent["simulation_number"] += 1
         
         # Calculate Health
-        self.agent["health"] += 1
+        self.agent["hp"] += 1
         print("Sit..")
         print("current state", self.agent)
         print("current count", self.agent["simulation_number"])

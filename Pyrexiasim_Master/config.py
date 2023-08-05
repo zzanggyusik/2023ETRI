@@ -37,9 +37,9 @@ class WorkerFlushConfig():
     
 class WorkerConfig():
     num_contariner = 5
-    mount_dir_path = './Results'
+    mount_dir_path = '/Users/qsiik/Desktop/2023ETRI/Pyrexiasim_Master/Results'
     
-    client_img = ''
+    client_img = 'zzanggyusik/agent_parts'
     
     router_ip = '*'
     router_port = 9999
@@ -72,4 +72,4 @@ class TelegramConfig():
     
 class PYZMQ():
     data_sender_host = "*"
-    data_sender_port = 5555
+    data_sender_port = 9898
