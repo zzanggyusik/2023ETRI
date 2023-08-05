@@ -27,6 +27,7 @@ class ModelManager():
         
         self.engine.register_entity(self.worker_flush_model)
         self.engine.register_entity(self.worker_remove_model)
+        self.engine.register_entity(self.tele_manager)
 
         self.worker_info_map = {}
 
