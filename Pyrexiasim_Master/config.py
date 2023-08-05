@@ -69,3 +69,7 @@ class DBConfig():
     
 class TelegramConfig():
     token = '5853861114:AAHa1oCKnCukwT866Wm6rd8cWh7YL-pg3gA'
+    
+class PYZMQ():
+    data_sender_host = "*"
+    data_sender_port = 5555
