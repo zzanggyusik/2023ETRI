@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from multiprocessing import Pool
 from rx import create
+import os, sys
 import zmq
 import json
 import sys
@@ -24,16 +25,21 @@ class Executor():
         
         self.site_info = {"name": "site1", "site": 1000}   
         
+        self.container_name = os.getenv("CONTAINER_NAME")
+        
         self.parts_list = ["sit_parts_model.simx", "stand_parts_model.simx"]
         self.simulation_number = 50
         self.seed = 34
         
-        self.mongo_client = MongoClient(host= "192.168.50.113", port= 27017)
+        #self.mongo_client = MongoClient(host= "192.168.50.113", port= 27017) # Local
+        self.mongo_client = MongoClient(host= "host.docker.internal", port= 27017) # Docker
         
         self.context = zmq.Context()
-        self.zmq_dealer()
+        self.zmq_dealer_init()
         self.zmq_sub_init()
 
+        self.dealer.send_string(self.container_name)
+        
     def run(self):
         # try:
         #     while True:
@@ -59,6 +65,14 @@ class Executor():
         execution_time = end_time - start_time
         
         self.update_db()
+        
+        data = {
+            "client_name" : self.container_name,
+            "message" : "Task Done"
+        }
+        
+        self.dealer.send_string(json.dumps(data))
+        print(f'Work Finish {data}')
         
         # print(f"시뮬레이션 결과 : {self.human.agent}")
         # print("병렬 실행 시간: {}초".format(execution_time))
@@ -128,15 +142,19 @@ class Executor():
         
         mongo_coll.insert_one(self.human.agent)
         
-    def zmq_dealer(self) -> None:
-        dealer = self.context.socket(zmq.DEALER)
-        dealer_url = f'tcp://{DEALER_HOST}:{DEALER_PORT}'
-        dealer.connect(f'tcp://{DEALER_HOST}:{DEALER_PORT}')
-        print(f"Dealer Work at {dealer_url}")
-        
-        dealer.send_string("Activated")
+    def zmq_dealer_init(self) -> None:
+        """
+        Dealer init // to send container state (running / task done)
+        """
+        self.dealer = self.context.socket(zmq.DEALER)
+        self.dealer_url = f'tcp://{DEALER_HOST}:{DEALER_PORT}'
+        self.dealer.connect(f'tcp://{DEALER_HOST}:{DEALER_PORT}')
+        print(f"Dealer Work at {self.dealer_url}")
 
     def zmq_sub_init(self) -> None:
+        """
+        Subscriber Init // 
+        """
         self.subscriber = self.context.socket(zmq.SUB)
         sub_url = f"tcp://{SUBSCRIBE_HOST}:{SUBSCRIBE_PORT}"
         self.subscriber.connect(sub_url)
