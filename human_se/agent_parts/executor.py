@@ -14,6 +14,7 @@ from stand_parts_model import StandPartsModel
 from sit_parts_model import SitPartsModel
 from pymongo import MongoClient
 from config import *
+import numpy as np
 
 class Executor():
     # def __init__(self, human_info, site_info, parts_list, simulation_number) -> None:
@@ -28,6 +29,8 @@ class Executor():
         # self.container_name = os.getenv("CONTAINER_NAME")
         
         self.parts_list = ["sit_parts_model.simx", "stand_parts_model.simx"]
+        self.set_parts_list = []
+        
         self.simulation_number = 50
         self.seed = 34
         
@@ -40,15 +43,24 @@ class Executor():
 
         self.dealer.send_string(str(self.container_name))
         
+        # self.seed = self.container_name.split("_")[1]
+        
+        np.random.seed(self.seed)
+        random_value = np.random.randint(2)
+        self.set_parts_list.append(self.parts_list[random_value])
+        
     def run(self):
         try:
             while True:
                 print("Receiving From Router..")
                 message = self.dealer.recv_multipart()
-                print(message)
-                # identity, content = message    
-                # print(content.decode())
-                print(message.decode("utf-8"))
+                
+                json_data = json.loads(message[0].decode())
+                print((json_data))
+                
+                self.set_init(json_data)
+                
+                break
                 
             while True:
                 print("Receive Ready...")
@@ -92,11 +104,12 @@ class Executor():
     
     def set_init(self, json_data) -> None:
         # self.container_id = json_data["container_id"]
-        self.human_info = json_data["human_info"]
-        self.site_info = json_data["site_info"]
+        print(json_data)
+        self.human_info["id"] = json_data["human_id"]
+        self.site_info["site_id"] = json_data["site_id"]
         
-        self.parts_list = json_data["parts_list"]
-        self.simulation_number = json_data["simulation_number"]
+        # self.parts_list = json_data["parts_list"]
+        # self.simulation_number = json_data["simulation_number"]
         
         self.human_db = self.mongo_client[self.human_info['id']]
         
@@ -123,14 +136,14 @@ class Executor():
         """
         Boot Loader 빌드
         """
-        HumanBootLoader(self.parts_list).build_bootloader()
+        HumanBootLoader(self.set_parts_list).build_bootloader()
 
     def set_engine(self) -> None:
         """
         Execution Engine 설정
         """
         # Human 모델에 붙을 Parts model 수
-        self.engine = ExecutionEngine(len(self.parts_list))
+        self.engine = ExecutionEngine(len(self.set_parts_list))
         
         # Boot Loader 등록
         self.engine.append_bootloader("SIMULATE", "./bootloader/human_boot_loader.simx")
@@ -153,6 +166,7 @@ class Executor():
         mongo_coll = mongo_db[coll_name]
         
         self.human.agent["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.human.agent["parts_lists"] = self.set_parts_list
         
         mongo_coll.insert_one(self.human.agent)
         

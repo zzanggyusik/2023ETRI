@@ -1,3 +1,5 @@
+from enum import Enum
+
 # SUBSCRIBE_HOST= "host.docker.internal" # For Docker
 SUBSCRIBE_HOST = "localhost"
 SUBSCRIBE_PORT = 5555
