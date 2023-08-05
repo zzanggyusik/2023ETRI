@@ -75,13 +75,13 @@ class WorkerModel(BehaviorModelExecutor):
 
             msg_lst = []
             # Check validity
-            if human_info['exist'] == 0:
+            if human_info['exist'] == 0 :
                 ## Delete Worker Model
                 msg = SysMessage(self.get_name(), self.get_name())
                 msg.insert(human_info)
                 msg_lst.append(msg)
                 
-            else:
+            elif human_info['site'] == SITE:
                 print("Human Detected")
                 print("Container Created")
                 

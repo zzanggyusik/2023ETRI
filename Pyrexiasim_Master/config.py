@@ -1,6 +1,8 @@
 from enum import Enum
 #from instance.config import *
 
+SITE = 'site1'
+
 class Init():
     enmae = 'pyrexiasim'
     simulation_time = 'REAL_TIME'
