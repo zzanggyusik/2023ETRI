@@ -1,29 +1,19 @@
-import asyncio
-
-import socket
-
 from config import *
 
 import cv2
 from pyzbar.pyzbar import decode
+import json
 
-with open('./config.json') as _file:
-    config = json.load(_file)
+import pymongo
 
-async def on_receive(socket:zmq.Socket):
-    while True:
-        data = socket.recv_multipart()
-        print(data)
-
-async def handle_camera(socket):
-    cap = cv2.VideoCapture(0)
-    #cap = cv2.VideoCapture(config['video_path'])
+def cam_open():
+    cam = cv2.VideoCapture(0)
     
     qr_data = []
 
     i = 0
-    while(cap.isOpened()): #카메라 켜놓는 부분
-        ret, img = cap.read()
+    while(cam.isOpened()): #카메라 켜놓는 부분
+        ret, img = cam.read()
 
         cv2.rectangle((0.0),(0, 500), (500,0), (500,500))
 
@@ -37,47 +27,43 @@ async def handle_camera(socket):
             x, y, w, h = d.rect
 
             barcode_data = d.data.decode("utf-8")
+            barcode_data = json.dumps(barcode_data)
             barcode_type = d.type
 
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            text = '%s (%s)' % (barcode_data, barcode_type)
+            text = f'{barcode_data} ({barcode_type})'
             cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
             
-            if barcode_data == "reset":
-                qr_data = []
+            print(barcode_data)
+            
             if barcode_data not in qr_data:
                 qr_data.append(barcode_data)
-                socket.send_string(barcode_data)
-                #print(type(barcode_data))
-                #print('data {} appended'.format(barcode_data))
                 
-            #result = sim_mongo.data_search(qr_data) #데이터 찾아오는거 
-            #print(result)
+            print(qr_data)
 
         cv2.imshow('img', img)
         
         key = cv2.waitKey(1)
-
-    cap.release()
-    cv2.destroyAllWindows()
         
-async def process_async(config:dict):
-    context = zmq.Context()
-    sock = context.socket(zmq.DEALER)
-    sock.connect(f"tcp://{config['server_addr']}:{config['server_port']}")
+        if key == ord('q'):
+            break
+
+    cam.release()
+    cv2.destroyAllWindows()
     
-    #sock.send_string("J")
-    await asyncio.wait([
-        asyncio.create_task(handle_camera(sock)),
-        asyncio.create_task(on_receive(sock)),
-    ])
+def db_updater(qr_data):
+    db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
+    human_info_db = pymongo.MongoClient(db_url)[DBConfig.human_db_name]
+    site_info_db = pymongo.MongoClient(db_url)[DBConfig.site_db_name]
+    
+    for i in range(len(qr_data)):
+        if qr_data[i]['id'] in HUMAN_LIST:
+            human_info_db[DBConfig.human_info_collection].update_one({'id':qr_data[i]['id']}, {'exist':qr_data[i]['exist']})
+            
+            
 
 def main():
-    # load configuration file
-    with open('./config.json') as _file:
-        config_data = json.load(_file)
-        print(config_data)
-    asyncio.run(process_async(config_data))
+    cam_open()
     
     pass
 

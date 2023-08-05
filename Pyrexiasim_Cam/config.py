@@ -2,7 +2,7 @@ from enum import Enum
 #from instance.config import *
     
 class DBConfig():
-    ip = 'localhost'
+    ip = '192.168.50.113'
     port = 27017
     id = ''
     pwd = ''
@@ -12,4 +12,6 @@ class DBConfig():
     
     human_info_collection = 'human_info'
     site_info_collection = 'site_info'
+    
+HUMAN_LIST = ['person1', 'person2']
     
