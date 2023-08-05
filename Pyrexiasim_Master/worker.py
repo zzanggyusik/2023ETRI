@@ -100,6 +100,12 @@ class WorkerModel(BehaviorModelExecutor):
                     
                     if content.decode() in self.container_state.keys():
                         self.container_state[content.decode()] = 1
+                        response = {
+                            'human_id' : human_info['id'],
+                            'site_id' : 'site1'
+                        }
+                        self.socket.send_multipart([identity, json.dumps(response).encode()])
+                        print(f'Sent to {content.decode()} : {response}')
                         
                     if all(value == 1 for value in self.container_state.values()):
                         break
@@ -152,15 +158,15 @@ class WorkerModel(BehaviorModelExecutor):
         
         for i in range(WorkerConfig.num_contariner):
             try : 
-                seed = random.randint(0,100)
-                client_name = f'{id}_{seed}'
+                self.seed = random.randint(0,100)
+                client_name = f'{id}_{self.seed}'
                 os.system(f"docker run -v {dir_path}:/Result -d  -e CONTAINER_NAME={client_name} --name {client_name} {WorkerConfig.client_img}")
                 
                 # Container state 확인용
                 running_container[client_name] = 0
                 
             except :
-                print(f'Already using seed {seed}')
+                print(f'Already using seed {self.seed}')
         
         print("@@@@ All container Is Running !!!\n")
         

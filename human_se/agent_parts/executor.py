@@ -23,7 +23,7 @@ class Executor():
                             "wbgt": 2, "met": 3, \
                                 "exist": 0, "hp": 0}
         
-        self.site_info = {"name": "site1", "site": 1000}   
+        self.site_info = {"site_id": "site1"}   
         
         # self.container_name = os.getenv("CONTAINER_NAME")
         
