@@ -3,9 +3,8 @@ import dill
 import time
 
 class StandPartsModel(PartsModel):
-    def __init__(self, simulation_number):
+    def __init__(self):
         super().__init__()
-        self._simulation_number = simulation_number
         self.count = 0
         
     def run_parts(self):
@@ -13,14 +12,17 @@ class StandPartsModel(PartsModel):
         self.agent["health"] -= 4
         print("Stand..")
         print("current state", self.agent)
-        print("env test", self.environment)
-        print("")
+        print("current count", self.agent["simulation_number"])
+        # print("env test", self.environment)
         
-        if self.count == self._simulation_number:
-            print("simulation finished")
+        
+        # if self.agent["simulation_number"] == self._simulation_number:
+        #     # coll_name = f"{self.agent['container_id']}_{self.agent['seed']}"
+        #     # self.collection = self._human_db[coll_name]
+        #     # print("Sit simulation finished")
             
     def build_parts_model(self):
-        loader = StandPartsModel(self._simulation_number)
+        loader = StandPartsModel()
         with open("./parts/sit_parts_model.simx", "wb") as f:
             dill.dump(loader, f)
 
