@@ -3,14 +3,15 @@ import dill
 import time
 
 class SitPartsModel(PartsModel):
-    def __init__(self):
+    def __init__(self, simulation_number):
         super().__init__()
+        self._simulation_number = simulation_number
         self.count = 0
         
     def run_parts(self):
         # time.sleep(0.5)
         # Count Simulation Process
-        # self.agent["simulation_number"] += 1
+        self.agent["simulation_number"] += 1
         
         # Calculate Health
         self.agent["health"] += 1
@@ -18,11 +19,11 @@ class SitPartsModel(PartsModel):
         print("current state", self.agent)
         print("current count", self.agent["simulation_number"])
         
-        # if self.agent["simulation_number"] == self._simulation_number:
-        #     print("Sit simulation finished")
+        if self.agent["simulation_number"] == self._simulation_number:
+            print("simulation finished")
 
     def build_parts_model(self):
-        loader = SitPartsModel()
+        loader = SitPartsModel(self._simulation_number)
         with open("./parts/sit_parts_model.simx", "wb") as f:
             dill.dump(loader, f)
 

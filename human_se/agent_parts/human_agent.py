@@ -1,8 +1,7 @@
 from base.agent_model import AgentModel
 
 class HumanAgent(AgentModel):
-    def __init__(self, human_info):
+    def __init__(self, id, smock, wbgt, met, health, out, simulation_number):
         super().__init__()
-        self.agent = {"id": human_info["id"], "smock": human_info["smock"], \
-            "wbgt": human_info["wbgt"], "met": human_info["met"], \
-                "health": human_info["health"], "out": human_info["out"]}
+        self.agent = {"id": id, "smock": smock, "wbgt": wbgt, \
+            "met": met, "health": health, "out": out, "simulation_number": simulation_number}
