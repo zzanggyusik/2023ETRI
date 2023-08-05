@@ -45,7 +45,7 @@ class WorkerRemoveConfig():
     HANDLE = 'HANDLE'
     
 class DBConfig():
-    ip = 'localhost'
+    ip = '192.168.50.113'
     port = 27017
     id = ''
     pwd = ''

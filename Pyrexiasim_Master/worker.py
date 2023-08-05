@@ -13,14 +13,14 @@ import logging
 
 ModelManager = TypeVar('ModelManager')
 class WorkerModel(BehaviorModelExecutor):
-    def __init__(self, inst_t, dest_t, mname, ename, hinfo):
+    def __init__(self, inst_t, dest_t, mname, ename, human_id):
         super().__init__(inst_t, dest_t, mname, ename)
         #Env DB
 
         #self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}@{DBConfig.pwd}"
         self.db_url = f"mongodb://{DBConfig.ip}:{DBConfig.port}"
-
-        self.hinfo = hinfo
+        self.human_info_db = pymongo.MongoClient(self.db_url)[DBConfig.human_db_name]
+        self.human_id = human_id
 
         # Model Management
         self.insert_input_port(mname)
@@ -32,7 +32,7 @@ class WorkerModel(BehaviorModelExecutor):
 
         # Telegram Management
         self.insert_output_port("msg")
-        self.insert_output_port("health_info")
+        self.insert_output_port("health_info b ")
 
         # State
         self.init_state("MONITOR")
@@ -56,6 +56,7 @@ class WorkerModel(BehaviorModelExecutor):
             return SysMessage(self.get_name(), "req_env")
         
         elif self._cur_state == "MONITOR":
+            human_info = self.human_info_db[DBConfig.human_info_collection].find_one({'id':self.human_id})
             # TODO: Check Health
             #print(f"{self.get_name()} checking hsinfo")
             
@@ -63,20 +64,22 @@ class WorkerModel(BehaviorModelExecutor):
 
             msg_lst = []
             # Check validity
-            if self.hinfo['exist'] == 0:
+            if human_info['exist'] == 0:
+                ## Delete Worker Model
                 msg = SysMessage(self.get_name(), self.get_name())
-                print(f'@@@@@@ {self.get_name()}')
-                msg.insert(self.hinfo)
-                #저장할 것 다 저장하고 worker_remove(update해야함) ->worker remove에서 해줘야함, 
+                # msg = SysMessage(self.get_name(), "health_info")
+                msg.insert(human_info)
                 msg_lst.append(msg)
                 
-                print('this is test')
-                
-                #컨테이너 삭제
-                
             else:
-                print('test')
-                pass
+                print("Human Detected")
+                print("Container Created")
+                # msg = SysMessage(self.get_name(), self.get_name())
+                # print(f'@@@@@@ {self.get_name()}')
+                # msg.insert(human_info)
+                #저장할 것 다 저장하고 worker_remove(update해야함) ->worker remove에서 해줘야함, 
+                # msg_lst.append(msg)
+                # print('this is test')
             
             #컨테이너 모니터로부터 종료 응답 대기 후 컨테이너 삭제
 

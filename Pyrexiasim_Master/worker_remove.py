@@ -35,6 +35,7 @@ class WorkerRemoveModel(BehaviorModelExecutor):
         for model in self.model_list:
             # save human_info into the mongodb
             #print(model)
+            print(f"Delete {model}")
             self.model_manager.remove_worker(model)
         
         self.model_list = []

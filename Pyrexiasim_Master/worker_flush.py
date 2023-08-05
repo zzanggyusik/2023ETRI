@@ -21,20 +21,26 @@ class WorkerFlushModel(BehaviorModelExecutor):
     def ext_trans(self, port, msg):
         if port == WorkerFlushConfig.health_info_port:
             data = msg.retrieve()[0]
-
-            key, value = data
-            print(f'@@@ {key} {value}')
-            if key in self.log_map:
-                self.log_map[key].append(value)
-            else:
-                self.log_map[key] = [value]
+            # print(f"data = {data.items()}")
+            for key, value in data.items():
+                pass
+            
+            # if key in self.log_map.keys():
+            #     self.log_map[key] = [value]
+            #     # self.log_map[key].append(value)
+            # else:
+            #     self.log_map[key].append(value)
+            self.log_map[key] = [value]
+            print(self.log_map)
+                
                 
         elif port == WorkerFlushConfig.flush_port:
             data = msg.retrieve()[0]
-            print(data)
-            print(self.log_map)
+            # print(data)
+            # print(self.log_map)
             with open(f"{data['id']}.log", "w") as f:
-                f.writelines(self.log_map[data['id']])
+                print("data: ", str(self.log_map[data['id']]))
+                f.writelines(str(self.log_map[data['id']]))
                 del self.log_map[data['id']]
     
     def output(self):
