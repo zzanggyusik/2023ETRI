@@ -35,6 +35,11 @@ class WorkerFlushConfig():
     
     IDLE = 'IDLE'
     
+class WorkerConfig():
+    num_contariner = 5
+    mount_dir_path = './Results'
+    
+    client_img = ''
     
 class WorkerRemoveConfig():
     typevar = 'ModelManager'

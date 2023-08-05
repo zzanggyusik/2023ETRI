@@ -4,6 +4,8 @@ from pyevsim.system_message import SysMessage
 from pyevsim.definition import *
 
 from typing import TypeVar
+import random
+import sys, os
 
 from config import * 
 
@@ -78,6 +80,8 @@ class WorkerModel(BehaviorModelExecutor):
                 
                 msg = SysMessage(self.get_name(), "containermodel_start")
                 # TODO : Create Container
+                
+                self.run_containers(human_info['id'])
 
                 while True:
                     # TODO : Router Send Data, Wait Receive
@@ -94,8 +98,6 @@ class WorkerModel(BehaviorModelExecutor):
 
         return msg_lst
 
-
-
     def int_trans(self):
         if self._cur_state == "MONITOR":
             self._cur_state = "MONITOR"
@@ -103,3 +105,24 @@ class WorkerModel(BehaviorModelExecutor):
             self._cur_state = "WAIT"
         elif self._cur_state == "WAIT":
             self._cur_state = "WAIT"
+
+    def run_containers(self, id):
+        start_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                
+        print('\n@@@@ Start Running Coniners...')
+
+        dir_path = f'{WorkerConfig.mount_dir_path}/{id}_{start_timestamp}'
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+        
+        for i in range(WorkerConfig.num_contariner):
+            try : 
+                seed = random.randint(0,100)
+                client_name = f'{id}_{seed}'
+                os.system(f"docker run -v {dir_path}:/Result -d  -e CONTAINER_NAME={client_name} --name {client_name} {WorkerConfig.client_img}")
+                
+            except :
+                print(f'Already using seed {seed}')
+        
+        print("@@@@ All container Is Running !!!\n")
+    
