@@ -50,11 +50,11 @@ class DBConfig():
     id = ''
     pwd = ''
     
-    human_db_name = ['pyrexiasim']
-    site_db_name = ['env']
+    human_db_name = 'pyrexiasim'
+    site_db_name = 'env'
     
-    human_info_collection = ['human_info']
-    site_info_collection = ['site_info']
+    human_info_collection = 'human_info'
+    site_info_collection = 'site_info'
     
     
     #def get_human_info()
