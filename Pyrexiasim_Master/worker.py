@@ -87,6 +87,7 @@ class WorkerModel(BehaviorModelExecutor):
                 
                 msg = SysMessage(self.get_name(), "containermodel_start")
                 # TODO : Create Container
+                # TODO : Docker Multi Staging을 통한 이미지 경량화 필요
                 
                 self.container_state = self.run_containers(human_info['id'])
 

@@ -183,7 +183,7 @@ class Executor():
         """
         self.dealer = self.context.socket(zmq.DEALER)
         self.dealer_url = f'tcp://{DEALER_HOST}:{DEALER_PORT}'
-        self.dealer.connect(f'tcp://{DEALER_HOST}:{DEALER_PORT}')
+        self.dealer.connect(self.dealer_url)
         print(f"Dealer Work at {self.dealer_url}")
 
     def zmq_sub_init(self) -> None:
