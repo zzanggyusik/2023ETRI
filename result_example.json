@@ -1,0 +1,117 @@
+{
+    "human_id": "4126f...",
+    "health": 72,
+    "heart_rate": 124,
+    "site_id": "vision1",
+    "pose": "standing",
+    "worked_times": "05:00",
+    "human_exist": true,
+    "simulation_activate": true
+}
+
+{
+    "name": "정미영",
+    "height": 162,
+    "weight": 58,
+    "gender": "female",
+    "chronic_disease": "arthritis",
+    "specifics": "잦은 자세 변동에 취약",
+    "recovery_speed": 2
+}
+
+
+{
+    "site_id": "vision1",
+    "work_intensity": 2,
+    "temperature": 1,
+    "noise": 1,
+    "specifics": {
+        "space": "open",
+        "type": "independent"
+    }
+}
+
+
+
+
+{
+    "human_id": "4126f...",
+    "simulated_id": "4126f...1...",
+    "log":[
+        {
+            "state": 1,
+            "source_site": "vision1",
+            "target_site": "vision3",
+            "moving_speed": 1,
+            "origin_health": 72,
+            "simulated_health": 68
+        },
+        {
+            "state": 2,
+            "source_site": "vision3",
+            "target_site": "vision3",
+            "moving_speed": 3,
+            "origin_health": 68,
+            "simulated_health": 63
+        },        
+        {
+            "state": 3,
+            "source_site": "vision3",
+            "target_site": "vision5",
+            "moving_speed": 2,
+            "origin_health": 63,
+            "simulated_health": 50
+        },
+        {
+            "state": 4,
+            "source_site": "vision5",
+            "target_site": "vision2",
+            "moving_speed": 2,
+            "origin_health": 50,
+            "simulated_health": 47
+        }
+    ],
+    "result_health": 47,
+    "result": "normal"
+}
+
+{
+    "human_id": "4126f...",
+    "simulated_id": "4126f...2...",
+    "log":[
+        {
+            "state": 1,
+            "source_site": "vision1",
+            "target_site": "vision5",
+            "moving_speed": 2,
+            "origin_health": 72,
+            "simulated_health": 62
+        },
+        {
+            "state": 2,
+            "source_site": "vision5",
+            "target_site": "vision4",
+            "moving_speed": 3,
+            "origin_health": 62,
+            "simulated_health": 54
+        },
+        {
+            "state": 3,
+            "source_site": "vision4",
+            "target_site": "vision5",
+            "moving_speed": 1,
+            "origin_health": 54,
+            "simulated_health": 46
+        },
+        {
+            "state": 4,
+            "source_site": "vision5",
+            "target_site": "vision5",
+            "moving_speed": 3,
+            "origin_health": 46,
+            "simulated_health": 31
+        }
+    ],
+    "result_health": 31,
+    "result": "danger"
+}
