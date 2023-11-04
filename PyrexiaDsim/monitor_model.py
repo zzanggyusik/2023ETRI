@@ -91,6 +91,7 @@ class MonitorModel(BehaviorModelExecutor):
             print(f"Router - {message}")
             break
         
+        time.sleep(1)
         self.router.send_multipart([identity, "checked".encode("utf-8")])
         print("Router - Container Generator Checked")
         
