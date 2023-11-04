@@ -35,15 +35,15 @@ class HumanModel(BehaviorModelExecutor):
         self.insert_state("MONIT", 1)
         
         # Define Port
-        self.insert_input_port("monitor_model_start")
-        self.insert_input_port("monitor_model_finish")
+        self.insert_input_port("monitor_start")
+        self.insert_input_port("monitor_finish")
         
     def ext_trans(self, port, msg):
-        if port == "monitor_model_start":
+        if port == "monitor_start":
             self._cur_state = "MONIT"
         
             
-        elif port == "monitor_model_finish":
+        elif port == "monitor_finish":
             self._cur_state = "IDLE"
         
     def output(self):
