@@ -63,8 +63,9 @@ async def run_containers(agent_container_name):
 async def stop_containers(agent_container_name) :
     
     ##### REVIEW: 1회성 연산 컨테이너이기 때문에 stop보다 kill이 더 효율적일듯 함(속도, 메모리 측면에서)
+    ##### ANSWER: OK..// 반영 완료
     print(f'\nStopping {agent_container_name} ...')
-    os.system(f"docker stop {agent_container_name}") # Docker Stop
+    os.system(f"docker kill {agent_container_name}") # Docker Stop
     print(f'Deleting {agent_container_name}...')
     os.system(f'docker rm {agent_container_name}') # Docker rm
     print(f'{agent_container_name} Deleted!!\n')
