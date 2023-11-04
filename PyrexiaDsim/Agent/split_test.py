@@ -1,7 +1,7 @@
-# a = "aaa_1"
+a = "containertestingcode_1_8_2_77_0_3_177_78'"
 
-# print(a.split("_")[0])
+print(type(a.split("_")[2]))
 
-import random
+# import random
 
-print(random.randint(1,5))
+# print(random.randint(1,5))

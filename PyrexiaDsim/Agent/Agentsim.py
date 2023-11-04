@@ -1,4 +1,4 @@
-from Agent.agentsim_manager import Agentsim
+from agentsim_manager import Agentsim
 import logging
 import sys
 

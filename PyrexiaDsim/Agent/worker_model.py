@@ -9,7 +9,11 @@ class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
-        self.cur_container_name = os.getenv(ContainerConfig.container_name).split('_')
+        # TESTING CODE
+        self.cur_container_name = 'containertestingcode_1_8_2_77_0_3_177_78'.split('_')
+        
+        # REAL CODE
+        # self.cur_container_name = os.getenv(ContainerConfig.container_name).split('_')
         
         # Define State
         self.init_state(SimulationModelState.IDLE)
@@ -45,22 +49,24 @@ class HumanModel(BehaviorModelExecutor):
             self._cur_state = SimulationModelState.IDLE   
     
     def classifier(self, hp, site_open, site_cowork):
-        if site_open == Site.OPEN_SPACE and site_cowork == Site.COOPERATION:
+        prediction = ''
+        
+        if site_open == Site.OPEN_SPACE.value and site_cowork == Site.COOPERATION.value:
             if hp < 30 : prediction = Classifier.DANGEROUS
             elif hp < 50 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
-        elif site_open == Site.OPEN_SPACE and site_cowork == Site.INDEPENDENT:
+        elif site_open == Site.OPEN_SPACE.value and site_cowork == Site.INDEPENDENT.value:
             if hp < 40 : prediction = Classifier.DANGEROUS
             elif hp < 60 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
-        elif site_open == Site.CLOSE_SPACE and site_cowork == Site.COOPERATION:
+        elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.COOPERATION.value:
             if hp < 35 : prediction = Classifier.DANGEROUS
             elif hp < 55 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
-        elif site_open == Site.CLOSE_SPACE and site_cowork == Site.INDEPENDENT:
+        elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.INDEPENDENT.value:
             if hp < 55 : prediction = Classifier.DANGEROUS
             elif hp < 75 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
@@ -70,17 +76,17 @@ class HumanModel(BehaviorModelExecutor):
     
     def cal_health(self):
         #data = self.cur_container_name
-        depth = int(self.cur_container_name[2]) # depth
-        gen_site = int(self.cur_container_name[3])
-        gen_hp = int(self.cur_container_name[4])
-        gender = int(self.cur_container_name[5])
-        disease = int(self.cur_container_name[6])
-        height = int(self.cur_container_name[7])
-        weight = int(self.cur_container_name[8])
+        depth = float(self.cur_container_name[2]) # depth
+        gen_site = float(self.cur_container_name[3])
+        gen_hp = float(self.cur_container_name[4])
+        gender = float(self.cur_container_name[5])
+        disease = float(self.cur_container_name[6])
+        height = float(self.cur_container_name[7])
+        weight = float(self.cur_container_name[8])
         
         result = {}
             
-        for i in range(depth):
+        for i in range(int(depth)):
             data = {}
             if i == 0:
                 cur_site = gen_site
@@ -134,10 +140,12 @@ class HumanModel(BehaviorModelExecutor):
                 
             prediction = self.classifier(cur_hp, site_open, site_cowork)
             
-            data[f'{cur_site}'] = cur_hp
-            data[f'prediction'] = prediction
+            data[f"{cur_site}"] = cur_hp
+            data[f"prediction"] = prediction
             
-            result[f'{i}'] = data
+            result[f"{i}"] = data
+            
+            print(result)
         
         return result
         
@@ -204,4 +212,7 @@ class HumanModel(BehaviorModelExecutor):
             site_open = Site.CLOSE_SPACE
             site_cowork = Site.INDEPENDENT
             
-        return workIntensity, wbgt, smock, pose, noise, site_open, site_cowork
+        # print(workIntensity.value)
+        # print(type(workIntensity))
+            
+        return float(workIntensity.value), float(wbgt.value), float(smock.value), float(pose.value), float(noise.value), float(site_open.value), float(site_cowork.value)
