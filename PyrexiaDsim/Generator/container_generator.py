@@ -24,6 +24,9 @@ async def main(config):
     }
     
     ##### REVIEW: 생성된 container_generator 컨테이너가 monitor_model 모델에게 자기 생성됐다고 알려주는 것인지?
+    ##### ANSWER: YES, monitor_model(local)에게 생성이 되었으며 해당하는 데이터(현재 human, state)전달받아서 실행함
+    #####          해당 이유는 시뮬레이션이 트리거가 되어 예측이 필요한 경우 바로 컨테이너 제너레이터가 만들어지며 이때 데이터를 
+    #####          전달할 수 있는 방법으로 zmq통신을 선택함(확장성을 위함). 
     
     socket.send_string(json.dumps(first_message))
     
@@ -33,6 +36,7 @@ async def main(config):
         
         identity, content = received_message
         ### REVIEW : message를 RECEIVE 받으면 while 루프 탈출 필요할듯
+        ### ANSWER : OK..// 무한으로 생성됨 방지 확인. 개발하면서 바꾸는과정 필요할듯
         
         
         # TODO : Received current data(human_data, state)
@@ -47,6 +51,7 @@ async def run_containers(agent_container_name):
     
     
     ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
+    ##### ANSWER: zmq통신을 사용해아될것으로 보임(generator - agent간의 통신 -> 이부분은 agent에 어느정도 고려가 되어있음).
     try :
         os.system(f"docker run -e CONTAINER_NAME={agent_container_name} --name {agent_container_name} {agent_container_image}")
         print(f'Container {agent_container_name} is Now Running!!')
