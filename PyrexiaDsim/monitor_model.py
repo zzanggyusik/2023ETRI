@@ -3,84 +3,90 @@ import sys, os
 import zmq
 import json
 from datetime import datetime
+from config import *
+from pymongo import MongoClient, DESCENDING
 
-class HumanModel(BehaviorModelExecutor):
-    def __init__(self, instance_time, destruct_time, name, engine_name, engine, config):
+# For Test - Need Delete!
+from Generator.container_generator import ContainerGenerator
+
+class MonitorModel(BehaviorModelExecutor):
+    def __init__(self, instance_time, destruct_time, name, engine_name, engine):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
-        self.monitoring_engine = engine
+        # Init Engine
+        self.engine = engine
         
-        self.pyrexiadsim_config = config["PyrexiaDsim_config"]
-        self.model_config = self.pyrexiadsim_config["model_config"]
+        # Init ZMQ Socket
+        self.socket= self.zmq_init()
         
-        self.generate_config = config["Virtual_config"]["generator_config"]
-        self.monitor_config = config["Virtual_config"]["monitor_config"]
-        self.container_config = config["Container_config"]
-        
-        # Monitor(local) IP/PORT
-        MONITOR_IP = self.monitor_config["ip"]
-        MONITOR_PORT = self.monitor_config["port"]
-        # # Generate(virtual) IP/PORT
-        # GENERATE_IP = self.generate_config["ip"]
-        # GENERATE_PORT = self.generate_config["port"]
-        
-        self.context = zmq.Context() 
-        
-        self.mon_socket = self.context.socket(zmq.ROUTER)
-        self.mon_socket.bind(f'tcp://{MONITOR_IP}:{MONITOR_PORT}')
+        # Init MongoDB
+        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
         
         # Define State
-        self.init_state("IDLE")
-        self.insert_state('IDLE', Infinite)
-        self.insert_state("MONIT", 1)
+        self.init_state(MonitorModelConfig.IDLE)
+        self.insert_state(MonitorModelConfig.IDLE, Infinite)
+        self.insert_state(MonitorModelConfig.PROCESSING, 5)
         
         # Define Port
-        self.insert_input_port("monitor_start")
-        self.insert_input_port("monitor_finish")
+        self.insert_input_port(MonitorModelConfig.start)
+        self.insert_input_port(MonitorModelConfig.fin)
         
     def ext_trans(self, port, msg):
-        if port == "monitor_start":
-            self._cur_state = "MONIT"
+        if port == MonitorModelConfig.start:
+            self._cur_state = MonitorModelConfig.PROCESSING
         
-            
-        elif port == "monitor_finish":
-            self._cur_state = "IDLE"
+        elif port == MonitorModelConfig.fin:
+            self._cur_state = MonitorModelConfig.IDLE
         
     def output(self):
-        if self._cur_state == "MONIT":
+        if self._cur_state == MonitorModelConfig.PROCESSING:
             #TODO refer DB, Create Docker Container
             self.check_db()
     
-            
-        elif self._cur_state == "IDLE":
+        elif self._cur_state == MonitorModelConfig.IDLE:
             print("IDLE")
                 
     def int_trans(self):
-        if self._cur_state == "MONIT":
-            self._cur_state = "MONIT"
+        if self._cur_state == MonitorModelConfig.PROCESSING:
+            self._cur_state = MonitorModelConfig.PROCESSING
             
-        elif self._cur_state == "IDLE":
-            self._cur_state = "IDLE"   
+        elif self._cur_state == MonitorModelConfig.IDLE:
+            self._cur_state = MonitorModelConfig.IDLE   
         
-    def check_db(self, config):
+    def check_db(self):
         # TODO : DB확인해서 Agent Container를 생성할지 확인하고 정보 전달
         
-        data = {
-            "human_id" : ""
-            } # DB를 통해서 넘겨줄 데이터들
+        # Read DB
+        human_list= self.mongo_client["human"]["human_info"].find()
         
-        self.run_containers(data, config)
-        pass
+        # Check if human's simulation_activate field is "True"
+        for human in human_list:
+            if human["simulation_activate"] == True:
+                print(f"{human['human_id']} - Simulation Activated")
+                
+                # Create Container Generator
+                self.run_gen_container(human['human_id'])
         
-    def run_gen_container(self, data, config):
+    def run_gen_container(self, human_id):
         # TODO : Generator container 실행
-        container_name = data["human_id"]
-        container_image = self.container_config["generator_container_image"]
-        try :
-            os.system(f"docker run -d  -e CONTAINER_NAME={container_name} --name {container_name} {container_image}")
-            print(f'Container {container_name} is Now Running')
+        # container_name = human_id
+        # container_image = ContainerGeneratorConfig.image_name
         
-        except:
-            os.system(f"docker start {container_name}")
-            print(f'Container {container_name} is Starting')
+        # try :
+        #     os.system(f"docker run -d  -e CONTAINER_NAME={container_name} --name {container_name} {container_image}")
+        #     print(f'Container {container_name} is Now Running')
         
+        # except:
+        #     os.system(f"docker start {container_name}")
+        #     print(f'Container {container_name} is Starting')
+        
+        # For Test - Need Delete!
+        ContainerGenerator.main(human_id)
+                
+        
+    def zmq_init(self):
+        context = zmq.Context() 
+        socket = context.socket(zmq.ROUTER)
+        socket.bind(f'tcp://{ZMQ_NetworkConfig.monitor_r_host}:{ZMQ_NetworkConfig.monitor_r_port}')
+        
+        return socket

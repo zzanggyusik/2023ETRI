@@ -1,4 +1,5 @@
-from PyrexiaDsim.pyrexiaDsim_manager import PyrexiaDsim
+# from .pyrexiaDsim_manager import PyrexiaDsim
+from pyrexiaDsim_manager import PyrexiaDsim
 import logging
 import sys
 
