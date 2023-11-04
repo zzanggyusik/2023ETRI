@@ -1,0 +1,45 @@
+{
+    "Virtual_config" : {
+        "generator_config" : 
+        {
+            "ip" : "host.docker.internal",
+            "port" : 9999,
+            "host_port" : 8888,
+            "instance_num" : 100,
+
+            "host_ip" : "host.docker.internal",
+            "host_ip_test" : "localhost"
+        },
+
+        "monitor_config" : 
+        {
+            "ip" : "*",
+            "port" : 8888
+        }
+    },
+
+    "PyrexiaDsim_config" : 
+    {
+        "simulation_path" : "./Simulation/simulation.py",
+        "result_path" : "./Result/",
+
+        "engie_config": 
+        {
+            "engine_name" : "pyrexiadsim_engine",
+            "simulation_time" : "REAL_TIME",
+            "simulation_time_unit" : 1
+        },
+
+        "Model_config" : 
+        {
+            "model_name" : "monitor_model"
+        }
+    },
+
+    "Container_config" : 
+    {
+        "generator_container_image" : "zzanggyusik/generator:latest",
+        "container_name" : "CONTAINER_NAME"
+    }
+
+}

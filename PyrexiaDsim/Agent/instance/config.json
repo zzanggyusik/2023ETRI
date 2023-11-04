@@ -1,0 +1,5 @@
+{
+    "container_name" : "CONTAINER_NAME",
+
+    "gen_port" : 9999
+}
