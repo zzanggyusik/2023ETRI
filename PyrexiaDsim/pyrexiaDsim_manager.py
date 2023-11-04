@@ -10,8 +10,8 @@ class PyrexiaDsim():
         with open("./_instance/config.json") as config_file:
             self.config = json.load(config_file)
         #-----------------------------------------------------------------------
-        engine_config = self.config["Simulation_config"]["engine_config"]
-        model_config = self.config["Simulation_config"]["model_config"]
+        engine_config = self.config["PyrexiaDsim_config"]["engine_config"]
+        model_config = self.config["PyrexiaDsim_config"]["model_config"]
         
         self.ss.register_engine(engine_config["engine_name"], engine_config["simulation_time"], engine_config["simulation_time_unit"])
         # self.ss.register_engine("monitoring_engine", "REAL_TIME / VIRTUAL_TIME", 1)
