@@ -22,6 +22,9 @@ async def main(config):
         "container_name" : cur_container_name,
         "message" : "ready"
     }
+    
+    ##### REVIEW: 생성된 container_generator 컨테이너가 monitor_model 모델에게 자기 생성됐다고 알려주는 것인지?
+    
     socket.send_string(json.dumps(first_message))
     
     while True :
@@ -29,6 +32,8 @@ async def main(config):
         print(f'From Host Monitor received : {received_message}')
         
         identity, content = received_message
+        ### REVIEW : message를 RECEIVE 받으면 while 루프 탈출 필요할듯
+        
         
         # TODO : Received current data(human_data, state)
         instance_num = config["Generator_config"]["instance_num"]  
@@ -40,6 +45,8 @@ async def main(config):
 async def run_containers(agent_container_name): 
     agent_container_image = config["Container_config"]["agent_container_image"]
     
+    
+    ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
     try :
         os.system(f"docker run -e CONTAINER_NAME={agent_container_name} --name {agent_container_name} {agent_container_image}")
         print(f'Container {agent_container_name} is Now Running!!')
@@ -49,6 +56,8 @@ async def run_containers(agent_container_name):
         print(f'Container {agent_container_name} is Now Starting!!')
         
 async def stop_containers(agent_container_name) :
+    
+    ##### REVIEW: 1회성 연산 컨테이너이기 때문에 stop보다 kill이 더 효율적일듯 함(속도, 메모리 측면에서)
     print(f'\nStopping {agent_container_name} ...')
     os.system(f"docker stop {agent_container_name}") # Docker Stop
     print(f'Deleting {agent_container_name}...')
