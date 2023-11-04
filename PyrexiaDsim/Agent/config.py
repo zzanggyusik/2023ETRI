@@ -1,0 +1,56 @@
+from enum import Enum
+
+class Smock(Enum):
+    VERY_LIGHT= 1
+    LIGHT= 2
+    MEDIUM= 3
+    HEAVY= 4
+    VERY_HEAVY= 5
+    
+class Pose(Enum):
+    STANDING= 1
+    SITTING= 2
+
+class Noise(Enum):
+    SILENT= 1
+    QUIET= 2
+    MODERATE= 3
+    NOISY= 4
+    LOUD= 5
+    
+class Temperture(Enum):
+    SUITABLE= 1
+    MILD= 2
+    WARM= 3
+    # COOL= 3
+    HOT= 4
+    # COLD= 4
+    SCORCHING= 5
+    # FREEZEING= 5
+    
+class Site(Enum):
+    OPEN_SPACE= 0
+    CLOSE_SPACE= 1
+    COOPERATION= 2
+    INDEPENDENT= 3
+    
+class WorkIntensity(Enum):
+    EASY= 1
+    MANAGEABLE= 2
+    MODERATE= 3
+    CHALLENGING= 4
+    DIFFICULT= 5
+
+class ChronicDisease(Enum):
+    # 관절염
+    ARTHRITIS= 1
+    # 고혈압
+    HYPERTENSION= 2
+    # 난청
+    HYPACUSIS= 3
+    # 열중증
+    HYPERTHERMIA= 4
+    # 당뇨병
+    DIABETES_MELLITUS= 5
+    
+    
