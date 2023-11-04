@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 from config import *
 from pymongo import MongoClient, DESCENDING
+from threading import Thread
+import time
 
 # For Test - Need Delete!
 from Generator.container_generator import ContainerGenerator
@@ -17,7 +19,7 @@ class MonitorModel(BehaviorModelExecutor):
         self.engine = engine
         
         # Init ZMQ Socket
-        self.socket= self.zmq_init()
+        self.router= self.zmq_init()
         
         # Init MongoDB
         self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
@@ -81,12 +83,20 @@ class MonitorModel(BehaviorModelExecutor):
         #     print(f'Container {container_name} is Starting')
         
         # For Test - Need Delete!
-        ContainerGenerator.main(human_id)
-                
+        Thread(target= ContainerGenerator().main, args= (human_id, )).start()
+        
+        while True:
+            print("Router - Waiting...")
+            identity, message = self.router.recv_multipart()
+            print(f"Router - {message}")
+            break
+        
+        self.router.send_multipart([identity, "checked".encode("utf-8")])
+        print("Router - Container Generator Checked")
         
     def zmq_init(self):
         context = zmq.Context() 
-        socket = context.socket(zmq.ROUTER)
-        socket.bind(f'tcp://{ZMQ_NetworkConfig.monitor_r_host}:{ZMQ_NetworkConfig.monitor_r_port}')
+        router = context.socket(zmq.ROUTER)
+        router.bind(f'tcp://{ZMQ_NetworkConfig.monitor_r_host}:{ZMQ_NetworkConfig.monitor_r_port}')
         
-        return socket
+        return router
