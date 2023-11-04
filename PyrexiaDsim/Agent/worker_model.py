@@ -99,19 +99,19 @@ class HumanModel(BehaviorModelExecutor):
             workIntensity, wbgt, smock, met, noise, site_open, site_cowork = self.num_converter(cur_site)
             
             if gender == 0 :
-                if disease == ChronicDisease.DIABETES_MELLITUS and workIntensity == 4:
+                if disease == ChronicDisease.DIABETES_MELLITUS.value and workIntensity == 4:
                     cur_hp -= 0.9*smock + 1*met*1.2 + 1.1*wbgt
                     
-                elif disease == ChronicDisease.HYPERTENSION and workIntensity == 5:
+                elif disease == ChronicDisease.HYPERTENSION.value and workIntensity == 5:
                     cur_hp -= 0.9*smock + 1*met*1.3 + 1.1*wbgt*1.1
                     
-                elif disease == ChronicDisease.HYPACUSIS and cur_site == 5:
+                elif disease == ChronicDisease.HYPACUSIS.value and cur_site == 5:
                     cur_hp -= (0.9*smock + 1*met + 1.1*wbgt)*1.2
                 
-                elif disease == ChronicDisease.HYPERTHERMIA and wbgt == 5:
+                elif disease == ChronicDisease.HYPERTHERMIA.value and wbgt == 5:
                     cur_hp -= 0.9*smock + 1*met + 1.1*wbgt*1.3
                     
-                elif disease == ChronicDisease.ARTHRITIS and met == 2:
+                elif disease == ChronicDisease.ARTHRITIS.value and met == 2:
                     cur_hp -= (0.9*smock + 1*met + 1.1*wbgt)*1.1
                     
                 else :
@@ -120,19 +120,19 @@ class HumanModel(BehaviorModelExecutor):
             else :
                 cur_hp -= 1.1*smock + 1.2*met + 1.3*wbgt
                 
-                if disease == ChronicDisease.DIABETES_MELLITUS and workIntensity == 4:
+                if disease == ChronicDisease.DIABETES_MELLITUS.value and workIntensity == 4:
                     cur_hp -= 1.1*smock + 1.2*met*1.2 + 1.3*wbgt
                     
-                elif disease == ChronicDisease.HYPERTENSION and workIntensity == 5:
+                elif disease == ChronicDisease.HYPERTENSION.value and workIntensity == 5:
                     cur_hp -= 1.1*smock + 1.2*met*1.3 + 1.3*wbgt*1.1
                     
-                elif disease == ChronicDisease.HYPACUSIS and cur_site == 5:
+                elif disease == ChronicDisease.HYPACUSIS.value and cur_site == 5:
                     cur_hp -= (1.1*smock + 1.2*met + 1.3*wbgt)*1.2
                 
-                elif disease == ChronicDisease.HYPERTHERMIA and wbgt == 5:
+                elif disease == ChronicDisease.HYPERTHERMIA.value and wbgt == 5:
                     cur_hp -= 1.1*smock + 1.2*met + 1.3*wbgt*1.3
                     
-                elif disease == ChronicDisease.ARTHRITIS and met == 2:
+                elif disease == ChronicDisease.ARTHRITIS.value and met == 2:
                     cur_hp -= (1.1*smock + 1.2*met + 1.3*wbgt)*1.1
                     
                 else :
