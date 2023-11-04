@@ -43,14 +43,40 @@ class HumanModel(BehaviorModelExecutor):
             
         elif self._cur_state == SimulationModelState.IDLE:
             self._cur_state = SimulationModelState.IDLE   
+    
+    def classifier(self, hp, site_open, site_cowork):
+        if site_open == Site.OPEN_SPACE and site_cowork == Site.COOPERATION:
+            if hp < 30 : prediction = Classifier.DANGEROUS
+            elif hp < 50 : prediction = Classifier.WARNING
+            else : prediction = Classifier.GOOD
             
+        elif site_open == Site.OPEN_SPACE and site_cowork == Site.INDEPENDENT:
+            if hp < 40 : prediction = Classifier.DANGEROUS
+            elif hp < 60 : prediction = Classifier.WARNING
+            else : prediction = Classifier.GOOD
+            
+        elif site_open == Site.CLOSE_SPACE and site_cowork == Site.COOPERATION:
+            if hp < 35 : prediction = Classifier.DANGEROUS
+            elif hp < 55 : prediction = Classifier.WARNING
+            else : prediction = Classifier.GOOD
+            
+        elif site_open == Site.CLOSE_SPACE and site_cowork == Site.INDEPENDENT:
+            if hp < 55 : prediction = Classifier.DANGEROUS
+            elif hp < 75 : prediction = Classifier.WARNING
+            else : prediction = Classifier.GOOD
+            
+        return prediction 
+            
+    
     def cal_health(self):
         #data = self.cur_container_name
         depth = int(self.cur_container_name[2]) # depth
         gen_site = int(self.cur_container_name[3])
         gen_hp = int(self.cur_container_name[4])
-        height = int(self.cur_container_name[5])
-        weight = int(self.cur_container_name[6])
+        gender = int(self.cur_container_name[5])
+        disease = int(self.cur_container_name[6])
+        height = int(self.cur_container_name[7])
+        weight = int(self.cur_container_name[8])
         
         result = {}
             
@@ -63,15 +89,8 @@ class HumanModel(BehaviorModelExecutor):
             else :
                 cur_site = random.randint(1,5)
                 
-            # TODO : site, smock, pose, wbgt mapping
-            # TODO : personaliry data mapping
-            
-            # cur_site에 따른 변화 필요
-            gender = 0
-            smock = 0
-            wbgt = 0
-            met = 0
-            disease = 0
+            # cur_site에 따른 변화 필요 met = pose 로 간주함
+            workIntensity, wbgt, smock, met, noise, site_open, site_cowork = self.num_converter(cur_site)
             
             if gender == 0 :
                 if disease == "당뇨" and met == "강도 4":
@@ -113,9 +132,10 @@ class HumanModel(BehaviorModelExecutor):
                 else :
                     cur_hp -= 1.1*smock + 1.2*met + 1.3*wbgt
                 
-                
+            prediction = self.classifier(cur_hp, site_open, site_cowork)
             
             data[f'{cur_site}'] = cur_hp
+            data[f'prediction'] = prediction
             
             result[f'{i}'] = data
         
@@ -138,4 +158,50 @@ class HumanModel(BehaviorModelExecutor):
         
         worker_socket.send_string(json.dumps(message))
     
+    def num_converter(self, cur_site):
+        if cur_site == 1:
+            workIntensity = WorkIntensity.MANAGEABLE
+            wbgt = Temperture.MILD
+            smock = Smock.VERY_LIGHT
+            pose = Pose.STANDING
+            noise = Noise.SILENT
+            site_open = Site.OPEN_SPACE
+            site_cowork = Site.INDEPENDENT
         
+        elif cur_site == 2:
+            workIntensity = WorkIntensity.MODERATE
+            wbgt = Temperture.WARM
+            smock = Smock.MEDIUM
+            pose = Pose.SITTING
+            noise = Noise.MODERATE
+            site_open = Site.OPEN_SPACE
+            site_cowork = Site.COOPERATION
+            
+        elif cur_site == 3:
+            workIntensity = WorkIntensity.EASY
+            wbgt = Temperture.MILD
+            smock = Smock.LIGHT
+            pose = Pose.SITTING
+            noise = Noise.QUIET
+            site_open = Site.OPEN_SPACE
+            site_cowork = Site.INDEPENDENT
+            
+        elif cur_site == 4:
+            workIntensity = WorkIntensity.CHALLENGING
+            wbgt = Temperture.HOT
+            smock = Smock.HEAVY
+            pose = Pose.STANDING
+            noise = Noise.NOISY
+            site_open = Site.CLOSE_SPACE
+            site_cowork = Site.COOPERATION
+            
+        elif cur_site == 5:
+            workIntensity = WorkIntensity.DIFFICULT
+            wbgt = Temperture.SCORCHING
+            smock = Smock.VERY_HEAVY
+            pose = Pose.STANDING
+            noise = Noise.LOUD
+            site_open = Site.CLOSE_SPACE
+            site_cowork = Site.INDEPENDENT
+            
+        return workIntensity, wbgt, smock, pose, noise, site_open, site_cowork
