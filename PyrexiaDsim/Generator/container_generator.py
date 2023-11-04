@@ -22,7 +22,7 @@ async def main(config):
         "container_name" : cur_container_name,
         "message" : "ready"
     }
-    socket.set_string(json.dumps(first_message))
+    socket.send_string(json.dumps(first_message))
     
     while True :
         received_message = await socket.recv_multipart()
