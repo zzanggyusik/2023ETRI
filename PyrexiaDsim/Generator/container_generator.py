@@ -28,6 +28,8 @@ class ContainerGenerator():
         print("Dealer - report start")
         self.report_to_router()
         
+        print("Dealer - report end")
+        
         # DB에서 human의 데이터를 읽어 컨테이너 이름 형태로 전처리
         human_info_string= self.human_data_preprocessing(human_id)
                 
@@ -35,7 +37,7 @@ class ContainerGenerator():
         for i in range(PyrexiaDsimConfig.instance_number):
             agent_container_name = f'{self.cur_container_name}_{i}_' + human_info_string
             print(agent_container_name)
-            self.run_containers(agent_container_name)            
+            # self.run_containers(agent_container_name)            
             
     
     def report_to_router(self):
@@ -55,7 +57,7 @@ class ContainerGenerator():
             print("Dealer - Waiting...")
             received_message = self.dealer_socket.recv_multipart()
             print(f'Dealer - From Host Monitor received : {received_message}')
-            break
+            return
     
     
     def run_containers(self, agent_container_name): 
@@ -149,7 +151,7 @@ class ContainerGenerator():
         
         
         human_info_string= f"{states}_{site_id}_{human_info['health']}_{gender}_{disease}_{height}_{weight}"
-                
+        
         return human_info_string
         
     
