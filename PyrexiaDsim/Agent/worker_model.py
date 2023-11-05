@@ -11,6 +11,8 @@ class HumanModel(BehaviorModelExecutor):
     
         self.human_info= human_info
         
+        self.dealer= self.zmq_init()
+        
         # Define State
         self.init_state(SimulationModelState.IDLE)
         self.insert_state(SimulationModelState.IDLE, Infinite)
@@ -59,7 +61,7 @@ class HumanModel(BehaviorModelExecutor):
                 
                 print(self.result_data)
                 
-                # self.send_result(data)
+                self.dealer.send_string(json.dumps(self.result_data))
             
             # 단계 증가
             self.cur_state_level += 1
@@ -175,24 +177,6 @@ class HumanModel(BehaviorModelExecutor):
         self.simulation_log.append(log)
         
         self.human_info["site_id"]= target_site
-
-        
-    
-    # def send_result(self, data):
-    #     HOST_IP = self.cur_container_name[0]
-    #     HOST_PORT = ContainerConfig.HOST_PORT
-        
-    #     context = zmq.Context()
-        
-    #     worker_socket =context.socket(zmq.DEALER)
-    #     worker_socket.connect()
-        
-    #     message = {
-    #         "message" : 'finish',
-    #         "data" : data
-    #     }
-        
-    #     worker_socket.send_string(json.dumps(message))
     
     def num_converter(self, cur_site):
         if cur_site == 1:
@@ -244,3 +228,11 @@ class HumanModel(BehaviorModelExecutor):
         # print(type(workIntensity))
             
         return float(workIntensity.value), float(wbgt.value), float(smock.value), float(pose.value), float(noise.value), float(site_open.value), float(site_cowork.value)
+    
+    def zmq_init(self):
+        context= zmq.Context()
+        dealer= context.socket(zmq.DEALER)
+        dealer.connect(f"tcp://{ContainerConfig.host}:{ContainerConfig.port}")
+        
+        return dealer
+    

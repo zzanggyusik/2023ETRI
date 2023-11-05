@@ -31,11 +31,11 @@ class MonitorModelConfig():
     fin= "monitor_finish"
     
 class ContainerGeneratorConfig():
-    image_name= "zzanggyusik/generator:latest"
+    image_name= "bodlehg/pyrexiasim:generator"
     get_container_name= "CONTAINER_NAME"
     
 class AgentContainerConfig():
-    image_name= "zzanggyusik/agent:latest"
+    image_name= "bodlehg/pyrexiasim:agent"
     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():

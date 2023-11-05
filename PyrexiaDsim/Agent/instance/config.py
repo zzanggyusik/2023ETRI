@@ -18,7 +18,8 @@ class SimulationModelState():
     FINISH = 'FINISH'
     
 class ContainerConfig():
-    HOST_PORT = 9999
+    host= "host.docker.internal"
+    port= 9999
     container_name = 'CONTAINER_NAME'
 
 class Smock(Enum):

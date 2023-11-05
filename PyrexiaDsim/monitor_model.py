@@ -44,7 +44,9 @@ class MonitorModel(BehaviorModelExecutor):
         if self._cur_state == MonitorModelConfig.PROCESSING:
             #TODO refer DB, Create Docker Container
             self.check_db()
-    
+
+            self._cur_state = MonitorModelConfig.IDLE
+            
         elif self._cur_state == MonitorModelConfig.IDLE:
             print("IDLE")
                 
@@ -71,27 +73,30 @@ class MonitorModel(BehaviorModelExecutor):
         
     def run_gen_container(self, human_id):
         # TODO : Generator container 실행
-        # container_name = human_id
-        # container_image = ContainerGeneratorConfig.image_name
+        container_name = human_id
+        container_image = ContainerGeneratorConfig.image_name
         
-        # try :
-        #     os.system(f"docker run -d  -e CONTAINER_NAME={container_name} --name {container_name} {container_image}")
-        #     print(f'Container {container_name} is Now Running')
+        try :
+            os.system(f"docker run -d -e CONTAINER_NAME={container_name} --privileged --name {container_name} {container_image}")
+            print(f'Container {container_name} is Now Running')
         
-        # except:
-        #     os.system(f"docker start {container_name}")
-        #     print(f'Container {container_name} is Starting')
+        except:
+            os.system(f"docker start {container_name}")
+            print(f'Container {container_name} is Starting')
         
         # For Test - Need Delete!
-        Thread(target= ContainerGenerator().main, args= (human_id, )).start()
+        # Thread(target= ContainerGenerator().main, args= (human_id, )).start()
         
         while True:
             print("Router - Waiting...")
             identity, message = self.router.recv_multipart()
-            print(f"Router - {message}")
+            
+            message= json.loads(message.decode())
+            print(f"From Dealer - {message['container_name']} : {message['message']}")
+            
             break
         
-        time.sleep(1)
+        time.sleep(3)
         self.router.send_multipart([identity, "checked".encode("utf-8")])
         print("Router - Container Generator Checked")
         

@@ -10,7 +10,7 @@ class Agentsim():
         # System Simulator Initialization
         self.ss = SystemSimulator()
         
-        self.ss.register_engine(Init.ename, Init.simulation_time, Init.simulation_uint_time)
+        self.ss.register_engine(Init.ename, "REAL_TIME", Init.simulation_uint_time)
         
         self.agent_engine = self.ss.get_engine(Init.ename)
         
@@ -18,9 +18,9 @@ class Agentsim():
         self.agent_engine.insert_input_port(SimulationConfig.IDLE)
         
         # Get Container name - Human Info
-        # self.cur_container_name = os.getenv(ContainerConfig.container_name).split('_')
+        self.cur_container_name = os.getenv(ContainerConfig.container_name).split('_')
         # Test Code
-        self.cur_container_name = 'containertestingcode_1_8_2_77_0_3_177_78'.split('_')
+        # self.cur_container_name = 'containertestingcode_1_8_2_77_0_3_177_78'.split('_')
         # Preprocessing Human Info
         self.human_info = {}
         
