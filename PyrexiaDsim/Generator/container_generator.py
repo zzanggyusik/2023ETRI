@@ -67,6 +67,8 @@ class ContainerGenerator():
             
             self.instance_count += 1
             
+            print(self.db_insert_list)
+            
             if self.instance_count == PyrexiaDsimConfig.instance_number:
                 print("All Container Created!")
                 break
