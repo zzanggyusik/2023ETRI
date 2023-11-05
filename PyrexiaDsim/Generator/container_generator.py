@@ -11,8 +11,10 @@ import time
 from datetime import datetime
 
 class ContainerGenerator():
-    
     def __init__(self) -> None:
+        # RUN Docker
+        os.system(f"service docker start")
+        
         self.dealer= self.zmq_dealer_init()
         self.router= self.zmq_router_init()
         

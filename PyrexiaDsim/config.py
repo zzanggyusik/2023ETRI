@@ -33,8 +33,8 @@ class ContainerGeneratorConfig():
     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():
-    # host= "192.168.50.201" # 1
-    host= "121.152.137.202" # 2
+    host= "192.168.50.201" # 1
+    # host= "121.152.137.202" # 2
     port= 27017
     
 class ZMQ_NetworkConfig():
