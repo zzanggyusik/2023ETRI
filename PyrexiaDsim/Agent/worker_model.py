@@ -4,6 +4,8 @@ import zmq
 import json
 import random
 from instance.config import *
+from datetime import datetime
+from pymongo import MongoClient, DESCENDING
 
 class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info):
@@ -12,6 +14,9 @@ class HumanModel(BehaviorModelExecutor):
         self.human_info= human_info
         
         self.dealer= self.zmq_init()
+        
+        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
         # Define State
         self.init_state(SimulationModelState.IDLE)
@@ -61,7 +66,16 @@ class HumanModel(BehaviorModelExecutor):
                 
                 print(self.result_data)
                 
-                self.dealer.send_string(json.dumps(self.result_data))
+                # 밑으로 전부 변경함(11.08)
+                collection_name= self.cur_container_name + datetime.now()
+                self.mongo_client["pyrexiasim_log"][collection_name].insert_one(self.result_data)
+                
+                message = {
+                    "container_name": self.cur_container_name,
+                    "message" : "done"                   
+                }
+                
+                self.dealer.send_string(json.dumps(message))
             
             # 단계 증가
             self.cur_state_level += 1
