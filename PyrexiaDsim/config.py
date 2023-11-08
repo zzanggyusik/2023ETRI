@@ -24,13 +24,26 @@ class MonitorModelConfig():
     IDLE= "IDLE"
     PROCESSING= "monitoring"
     
-    # Model Port
-    start= "monitor_start"
-    fin= "monitor_finish"
+    # Monitor Model Port
+    monitor_start= "monitor_start"
+    monitor_fin= "monitor_finish"
     
 class ContainerGeneratorConfig():
-    image_name= "bodlehg/pyrexiasim:generator"
-    get_container_name= "CONTAINER_NAME"
+    # Model Name
+    model_name= "human_id"
+    
+    # Model State
+    IDLE= "IDLE"
+    PROCESSING= "processing"    
+    
+    # Container Generator Model Port
+    generator_start= "generator_start"
+    generator_fin= "generator_fin"    
+    
+    
+# class ContainerGeneratorConfig():
+#     image_name= "bodlehg/pyrexiasim:generator"
+#     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():
     host= "192.168.50.201" # 1
