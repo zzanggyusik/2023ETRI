@@ -4,7 +4,7 @@
     "heart_rate": 124,
     "site_id": "vision1",
     "pose": "standing",
-    "worked_times": "05:00",
+    "hours_worked": 240,
     "human_exist": true,
     "simulation_activate": true
 }
@@ -12,12 +12,11 @@
 {
     "human_id": "412f6032-aad4-433c-b89c-a9f1755a08ec",
     "name": "정미영",
-    "height": 162,
-    "weight": 58,
+    "height": 162.3,
+    "weight": 58.1,
     "gender": "female",
     "chronic_disease": "arthritis",
     "specifics": "잦은 자세 변동에 취약",
-    "recovery_speed": 2
 }
 
 412f6032-aad4-433c-b89c-a9f1755a08ec
@@ -29,7 +28,7 @@
 {
     "site_id": "vision1",
     "work_intensity": 2,
-    "temperature": 1,
+    "temperature": 29.9,
     "noise": 1,
     "specifics": {
         "space": "open",
@@ -45,40 +44,58 @@
     "simulated_id": "4126f...1...",
     "log":[
         {
-            "state": 1,
+            "simulated_id": "4126f...1...",
+            "hours_worked": 240,
+            "site_working_hours": 300,
             "source_site": "vision1",
             "target_site": "vision3",
             "moving_speed": 1,
-            "origin_health": 72,
-            "simulated_health": 68
+            "in_health": 72,
+            "out_health": 68,
+            "in_heartrate": 120,
+            "out_heartrate": 140,
+            "prediction": "good"
         },
         {
-            "state": 2,
+            "simulated_id": "4126f...1...",
+            "hours_worked": 300,
+            "site_working_hours": 360,
             "source_site": "vision3",
             "target_site": "vision3",
             "moving_speed": 3,
-            "origin_health": 68,
-            "simulated_health": 63
+            "in_health": 68,
+            "out_health": 63,
+            "in_heartrate": 140,
+            "out_heartrate": 135,            
+            "prediction": "good"
         },        
         {
-            "state": 3,
+            "simulated_id": "4126f...1...",
+            "hours_worked": 360,
+            "site_working_hours": 420,
             "source_site": "vision3",
             "target_site": "vision5",
             "moving_speed": 2,
-            "origin_health": 63,
-            "simulated_health": 50
+            "in_health": 63,
+            "out_health": 50,
+            "in_heartrate": 140,
+            "out_heartrate": 175,             
+            "prediction": "normal"
         },
         {
-            "state": 4,
+            "simulated_id": "4126f...1...",
+            "hours_worked": 420,
+            "site_working_hours": 480,
             "source_site": "vision5",
             "target_site": "vision2",
             "moving_speed": 2,
-            "origin_health": 50,
-            "simulated_health": 47
+            "in_health": 50,
+            "out_health": 47,
+            "in_heartrate": 175,
+            "out_heartrate": 110,             
+            "prediction": "normal"            
         }
-    ],
-    "result_health": 47,
-    "result": "normal"
+    ]
 }
 
 {
@@ -86,38 +103,56 @@
     "simulated_id": "4126f...2...",
     "log":[
         {
-            "state": 1,
+            "simulated_id": "4126f...2...",
+            "hours_worked": 240,
+            "site_working_hours": 300,
             "source_site": "vision1",
             "target_site": "vision5",
             "moving_speed": 2,
-            "origin_health": 72,
-            "simulated_health": 62
+            "in_health": 72,
+            "out_health": 62,
+            "in_heartrate": 110,
+            "out_heartrate": 120,             
+            "prediction": "good"      
         },
         {
-            "state": 2,
+            "simulated_id": "4126f...2...",
+            "hours_worked": 300,
+            "site_working_hours": 360,
             "source_site": "vision5",
             "target_site": "vision4",
             "moving_speed": 3,
-            "origin_health": 62,
-            "simulated_health": 54
+            "in_health": 62,
+            "out_health": 54,
+            "in_heartrate": 120,
+            "out_heartrate": 134,             
+            "prediction": "normal"              
         },
         {
-            "state": 3,
+            "simulated_id": "4126f...2...",
+            "hours_worked": 360,
+            "site_working_hours": 420,
             "source_site": "vision4",
             "target_site": "vision5",
             "moving_speed": 1,
-            "origin_health": 54,
-            "simulated_health": 46
+            "in_health": 54,
+            "out_health": 46,
+            "in_heartrate": 134,
+            "out_heartrate": 165,   
+            "prediction": "normal"            
         },
         {
-            "state": 4,
+            "simulated_id": "4126f...2...",
+            "hours_worked": 420,
+            "site_working_hours": 480,
             "source_site": "vision5",
             "target_site": "vision5",
             "moving_speed": 3,
-            "origin_health": 46,
-            "simulated_health": 31
+            "in_health": 46,
+            "out_health": 31,
+            "in_heartrate": 165,
+            "out_heartrate": 112,             
+            "prediction": "danger"  
         }
-    ],
-    "result_health": 31,
-    "result": "danger"
+    ]
 }

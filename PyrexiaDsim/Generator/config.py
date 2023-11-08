@@ -80,9 +80,18 @@ class Smock(Enum):
     HEAVY= 4
     VERY_HEAVY= 5
     
+    
+class SiteID(Enum):
+    VISION1= 0
+    VISION2= 1
+    VISION3= 2
+    VISION4= 3
+    VISION5= 4
 class Pose(Enum):
     STANDING= 1
     SITTING= 2
+    
+    
 
 class Noise(Enum):
     SILENT= 1
@@ -101,7 +110,7 @@ class Temperture(Enum):
     SCORCHING= 5
     # FREEZEING= 5
     
-class Site(Enum):
+class SiteFeature(Enum):
     OPEN_SPACE= 0
     CLOSE_SPACE= 1
     COOPERATION= 2
@@ -114,17 +123,21 @@ class WorkIntensity(Enum):
     CHALLENGING= 4
     DIFFICULT= 5
 
+class Gender(Enum):
+    MALE= 0
+    FEMALE= 1
+
 class ChronicDisease(Enum):
     # 관절염
-    ARTHRITIS= 1
+    ARTHRITIS= 0
     # 고혈압
-    HYPERTENSION= 2
+    HYPERTENSION= 1
     # 난청
-    HYPACUSIS= 3
+    HYPACUSIS= 2
     # 열중증
-    HYPERTHERMIA= 4
+    HYPERTHERMIA= 3
     # 당뇨병
-    DIABETES_MELLITUS= 5
+    DIABETES_MELLITUS= 4
     
         
     

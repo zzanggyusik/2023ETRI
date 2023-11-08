@@ -1,0 +1,34 @@
+public class AgentSimulatedResult{
+    // Identifier of human 
+    public string human_id { get; set; }
+    // Identifier of simulated agent
+    public string simulated_id { get; set; }
+    // Simulation Log
+    public SimulationLog[] log { get; set; }
+}
+
+public class SimulationLog{
+    // Identifier of simulated agent
+    public string simulated_id { get; set; }
+    // 근무한 시간
+    public int hours_worked { get; set; }
+    // 현장에서 근무한 시간
+    public int site_working_hours { get; set; }
+    // 현재 장소
+    public string source_site {get; set;}
+    // 목적 장소
+    public string target_site {get; set;}
+    // 장소 이동 시 속도
+    public int moving_speed {get; set;}
+    // 현장에서 근무하기 전 체력
+    public float in_health {get; set;}
+    // 현장에서 근무한 후 체력
+    public float out_health {get; set;}
+    // 현장에서 근무하기 전 심박수
+    public int in_heartrate {get; set;}
+    // 현장에서 근무한 후 심박수
+    public int out_heartrate {get; set;}
+    // Agent 상태 평가
+    public string prediction {get; set;}
+
+}
