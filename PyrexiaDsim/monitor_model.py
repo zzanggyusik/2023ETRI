@@ -31,11 +31,11 @@ class MonitorModel(BehaviorModelExecutor):
         # Define State
         self.init_state(MonitorModelConfig.IDLE)
         self.insert_state(MonitorModelConfig.IDLE, Infinite)
-        self.insert_state(MonitorModelConfig.PROCESSING, 5)
+        self.insert_state(MonitorModelConfig.PROCESSING, 1)
         
         # Define Port
-        self.insert_input_port(MonitorModelConfig.monitor_start)
-        self.insert_input_port(MonitorModelConfig.monitor_fin)
+        self.insert_input_port(MonitorModelConfig.start)
+        self.insert_input_port(MonitorModelConfig.fin)
         
     def ext_trans(self, port, msg):
         if port == MonitorModelConfig.start:
@@ -63,28 +63,31 @@ class MonitorModel(BehaviorModelExecutor):
         
     def check_db(self):
         # TODO : DB확인해서 Agent Container를 생성할지 확인하고 정보 전달
-        
+        print("[Monitor Model]: Monitoring DB...")
         # Read DB
         human_list= self.mongo_client["human"]["human_info"].find()
         
         # Check if human's simulation_activate field is "True"
         for human_info in human_list:
             if human_info["simulation_activate"] == True:
-                print(f"{human_info['human_id']} - Simulation Activated")
+                print(f"[Monitor Model]: {human_info['human_id']} - Simulation Activated")
+                human_profile= self.mongo_client["human"]["human_profile"].find_one({"human_id": human_info["human_id"]})
+                
                 
                 # Check Human_Info Map
                 
                 # Create Generator, Insert to Engine
-                self.insert_generator(human_info)
+                if human_info["human_id"] not in self.generator_map:
+                    self.insert_generator(human_info, human_profile)
                 
                 # Create Container Generator Model
                 
                 # Create Container Generator
                 # self.run_gen_container(human['human_id'])
         
-    def insert_generator(self, human_info):
-        generator_model = ContainerGeneratorModel(0, Infinite, human_info['id'], self.engine.get_name(), human_info)
-        self.generator_map[human_info['id']]= generator_model
+    def insert_generator(self, human_info, human_profile):
+        generator_model = ContainerGeneratorModel(0, Infinite, human_info['human_id'], self.engine.get_name(), self.engine, human_info, human_profile)
+        self.generator_map[human_info["human_id"]]= generator_model
         
         #self.engine.insert_input_port(self.model_name)
         
