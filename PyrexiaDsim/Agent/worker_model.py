@@ -67,7 +67,7 @@ class HumanModel(BehaviorModelExecutor):
                 print(self.result_data)
                 
                 # 밑으로 전부 변경함(11.08)
-                collection_name= self.cur_container_name + datetime.now()
+                collection_name= self.cur_container_name + str(datetime.now())
                 self.mongo_client["pyrexiasim_log"][collection_name].insert_one(self.result_data)
                 
                 message = {
