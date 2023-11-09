@@ -58,8 +58,8 @@ class ContainerGenerator():
         #self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
         
         # Finish Process
-        for i in range(PyrexiaDsimConfig.instance_number):
-            self.stop_containers()
+        
+        self.stop_containers()
         
             
     def check_container_instance(self, start_time):

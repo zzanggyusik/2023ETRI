@@ -65,8 +65,8 @@ class HumanModel(BehaviorModelExecutor):
                 self.result_data["human_id"]= self.human_info["human_id"]
                 self.result_data["simulated_id"]= self.human_info["simulated_id"]
                 self.result_data["log"]= self.simulation_log
-                self.result_data["result_health"]= self.simulation_log[self.cur_state_level - 1]["simulated_health"]
-                self.result_data["result_prediction"]= self.simulation_log[self.cur_state_level - 1]["prediction"]
+                #self.result_data["result_health"]= self.simulation_log[self.cur_state_level - 1]["simulated_health"]
+                #self.result_data["result_prediction"]= self.simulation_log[self.cur_state_level - 1]["prediction"]
                 
                 result_data = self.result_data
                 
@@ -196,12 +196,14 @@ class HumanModel(BehaviorModelExecutor):
             
         prediction = self.classifier(self.human_info["health"], site_open, site_cowork)
         
-        log["state"]= self.cur_state_level
+        log["simulation_id"]= f'{self.human_info["human_id"]}{self.cur_state_level}'
+        log["hours_worked"]= (self.cur_state_level) * 30
+        log["site_working_hours"]= (self.cur_state_level + 1) * 30
         log["source_site"]= source_site
         log["target_site"]= target_site
         log["moving_speed"]= random.randint(1, 3)
-        log["origin_health"]= origin_health
-        log["simulated_health"]= round(self.human_info["health"], 3)
+        log["in_health"]= origin_health
+        log["out_health"]= round(self.human_info["health"], 3)
         log["prediction"]= prediction
         
         # Check Log
