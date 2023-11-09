@@ -35,8 +35,10 @@ class Agentsim():
         self.human_info["weight"] = float(self.cur_container_name[8])
         self.human_info["heart_beat"] = float(self.cur_container_name[9])
         
+        self.des_time = int((480 - (self.human_info["worked_time"])) / 30)
+        
         # Register Entity -> Simulation while state
-        worker_model = HumanModel(0, self.human_info["state"] + 1, Init.modle_manager_name, Init.ename, self.agent_engine, self.human_info)
+        worker_model = HumanModel(0, self.des_time, Init.modle_manager_name, Init.ename, self.agent_engine, self.human_info)
         
         self.agent_engine.register_entity(worker_model)
         
