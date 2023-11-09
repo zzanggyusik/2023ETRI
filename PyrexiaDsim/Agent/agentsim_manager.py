@@ -26,7 +26,7 @@ class Agentsim():
         
         self.human_info["human_id"]= self.cur_container_name[0]
         self.human_info["simulated_id"]= self.cur_container_name[0] + "_" + self.cur_container_name[1]
-        self.human_info["worked_time"] = float(self.cur_container_name[2])
+        self.human_info["hours_worked"] = float(self.cur_container_name[2])
         self.human_info["site_id"] = float(self.cur_container_name[3])
         self.human_info["health"] = float(self.cur_container_name[4])
         self.human_info["gender"] = float(self.cur_container_name[5])
@@ -35,7 +35,7 @@ class Agentsim():
         self.human_info["weight"] = float(self.cur_container_name[8])
         self.human_info["heart_beat"] = float(self.cur_container_name[9])
         
-        self.des_time = int((480 - (self.human_info["worked_time"])) / 30)
+        self.des_time = int((480 - (self.human_info["hours_worked"])) / 30)
         
         # Register Entity -> Simulation while state
         worker_model = HumanModel(0, self.des_time, Init.modle_manager_name, Init.ename, self.agent_engine, self.human_info)

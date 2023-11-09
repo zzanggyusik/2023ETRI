@@ -15,6 +15,8 @@ class HumanModel(BehaviorModelExecutor):
         
         self.dealer= self.zmq_init()
         
+        self.destruct_time = destruct_time
+        
         self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
         self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
@@ -36,6 +38,8 @@ class HumanModel(BehaviorModelExecutor):
         
         self.col_name = str(self.get_col_name())
         
+        self.hb = self.human_info["heart_beat"]
+        
     def int_trans(self):
         if self._cur_state == SimulationModelState.PROCESS:
             self._cur_state = SimulationModelState.PROCESS
@@ -51,15 +55,18 @@ class HumanModel(BehaviorModelExecutor):
             self._cur_state = SimulationModelState.IDLE
         
     def output(self):
+        print("@@@@@")
         if self._cur_state == SimulationModelState.PROCESS:
             #TODO refer DB, Create Docker Container
             
+            self.hb = self.cal_hb(self.hb)
             
             self.cal_health()
             print(self.cur_state_level)
+            print(f'des time : {self.destruct_time}')
             
             # 시뮬레이션 종료
-            if self.cur_state_level == self.human_info["state"]:
+            if int(self.cur_state_level) == int(self.destruct_time - 1):
                 print("simulation finished")
                 
                 self.result_data["human_id"]= self.human_info["human_id"]
@@ -67,8 +74,6 @@ class HumanModel(BehaviorModelExecutor):
                 self.result_data["log"]= self.simulation_log
                 #self.result_data["result_health"]= self.simulation_log[self.cur_state_level - 1]["simulated_health"]
                 #self.result_data["result_prediction"]= self.simulation_log[self.cur_state_level - 1]["prediction"]
-                
-                result_data = self.result_data
                 
                 print(self.result_data)
                 
@@ -130,7 +135,13 @@ class HumanModel(BehaviorModelExecutor):
             
         return prediction 
     
-    def cal_hb(self):
+    def cal_hb(self, hb): 
+        if random.random() > 0.5:
+            hb += random.randint(1,10)
+            
+        else : hb -= random.randint(1, 10)
+        
+        return hb
     
     def cal_health(self):
         #data = self.cur_container_name
@@ -198,8 +209,8 @@ class HumanModel(BehaviorModelExecutor):
         prediction = self.classifier(self.human_info["health"], site_open, site_cowork)
         
         log["simulation_id"]= f'{self.human_info["human_id"]}{self.cur_state_level}'
-        log["hours_worked"]= (self.cur_state_level) * 30
-        log["site_working_hours"]= (self.cur_state_level + 1) * 30
+        log["hours_worked"]= self.human_info["hours_worked"] + (self.cur_state_level) * 30
+        log["site_working_hours"]= self.human_info["hours_worked"] + (self.cur_state_level + 1) * 30
         log["source_site"]= source_site
         log["target_site"]= target_site
         log["moving_speed"]= random.randint(1, 3)
