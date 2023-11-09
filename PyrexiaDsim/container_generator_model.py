@@ -63,6 +63,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
                 agent_container_name = f'{self.human_info["human_id"]}_{i}_' + human_info_string
                 self.run_containers(agent_container_name)            
             
+            
+            
             self.check_container_instance(start_time)
             
             self.stop_containers()

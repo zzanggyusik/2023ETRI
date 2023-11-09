@@ -85,7 +85,6 @@ class MonitorModel(BehaviorModelExecutor):
                     print(f"[Monitor Model]: {human_info['human_id']} - Already Existed")
                 else:
                     print(f"[Monitor Model]: {human_info['human_id']} - Simulation Activated")
-                    self.insert_generator(human_info, human_profile)
                 
                 # Create Container Generator Model
                 
