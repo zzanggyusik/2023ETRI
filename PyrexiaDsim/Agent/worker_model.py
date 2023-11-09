@@ -34,6 +34,8 @@ class HumanModel(BehaviorModelExecutor):
         self.simulation_log= []
         self.result_data= {}
         
+        self.col_name = str(self.get_col_name())
+        
     def int_trans(self):
         if self._cur_state == SimulationModelState.PROCESS:
             self._cur_state = SimulationModelState.PROCESS
@@ -51,6 +53,8 @@ class HumanModel(BehaviorModelExecutor):
     def output(self):
         if self._cur_state == SimulationModelState.PROCESS:
             #TODO refer DB, Create Docker Container
+            
+            
             self.cal_health()
             print(self.cur_state_level)
             
@@ -64,15 +68,17 @@ class HumanModel(BehaviorModelExecutor):
                 self.result_data["result_health"]= self.simulation_log[self.cur_state_level - 1]["simulated_health"]
                 self.result_data["result_prediction"]= self.simulation_log[self.cur_state_level - 1]["prediction"]
                 
+                result_data = self.result_data
+                
                 print(self.result_data)
                 
                 # 밑으로 전부 변경함(11.08)
-                collection_name= self.cur_container_name + str(datetime.now())
-                self.mongo_client["pyrexiasim_log"][collection_name].insert_one(self.result_data)
+                #collection_name= self.cur_container_name + str(datetime.now())
+                self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
                 
                 message = {
                     "container_name": self.cur_container_name,
-                    "message" : "done"                   
+                    "message" : "done"
                 }
                 
                 self.dealer.send_string(json.dumps(message))
@@ -84,7 +90,20 @@ class HumanModel(BehaviorModelExecutor):
         elif self._cur_state == SimulationModelState.IDLE:
             print(SimulationModelState.IDLE)
                 
-
+    def get_col_name(self):
+        message = {
+            "container_name" : self.cur_container_name,
+            "message" : "start"
+        }
+        
+        self.dealer.send_string(json.dumps(message))
+        
+        while True:
+            recv = self.dealer.recv_string()
+            recv = str(recv).replace(" ", "T")
+            print(recv)
+            
+            return recv
     
     def classifier(self, hp, site_open, site_cowork):
         prediction = ''

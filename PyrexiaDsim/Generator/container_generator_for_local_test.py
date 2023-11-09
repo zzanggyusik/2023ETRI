@@ -43,6 +43,7 @@ class ContainerGenerator():
         print(f'human_info_string = {human_info_string}')
                 
         # TODO : Received current data(human_data, state)
+        start_time = str(datetime.now())
         
         # Create Agent Containers
         for i in range(PyrexiaDsimConfig.instance_number):
@@ -50,30 +51,35 @@ class ContainerGenerator():
             self.run_containers(agent_container_name)
             
         # Check Container Create Successfully.
-        self.check_container_instance()
+        self.check_container_instance(start_time)
         
         # Insert Simulation Result
-        collection_name= self.cur_container_name + str(datetime.now())
-        self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
+        #collection_name= self.cur_container_name + str(datetime.now())
+        #self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
         
         # Finish Process
-        self.stop_containers()
+        for i in range(PyrexiaDsimConfig.instance_number):
+            self.stop_containers()
         
             
-    def check_container_instance(self):
+    def check_container_instance(self, start_time):
         while True:
             print("Router - Waiting...")
             identity, message = self.router.recv_multipart()
             message= json.loads(message.decode())
-            self.db_insert_list.append(message)
+            if message['message'] == 'start':
+                print(f'{identity} : {start_time}')
+                self.router.send_multipart([identity, f"{start_time}".encode("utf-8")])
             
-            self.instance_count += 1
+            if message['message'] == 'done':
+                self.instance_count += 1
+                self.db_insert_list.append(message)
+                
+                print(self.db_insert_list)
             
-            print(self.db_insert_list)
-            
-            if self.instance_count == PyrexiaDsimConfig.instance_number:
-                print("All Container Created!")
-                break
+                if self.instance_count == PyrexiaDsimConfig.instance_number:
+                    print("All Container Created!")
+                    break
         
     
     
@@ -112,14 +118,21 @@ class ContainerGenerator():
             os.system(f"docker start {agent_container_name}")
             print(f'Container {agent_container_name} is Now Starting!!')
             
-    def stop_containers(self, agent_container_name) :
+    def stop_containers(self) :
         
         ##### REVIEW: 1회성 연산 컨테이너이기 때문에 stop보다 kill이 더 효율적일듯 함(속도, 메모리 측면에서)
-        print(f'\nStopping {agent_container_name} ...')
-        os.system(f"docker stop {agent_container_name}") # Docker Stop
-        print(f'Deleting {agent_container_name}...')
-        os.system(f'docker rm {agent_container_name}') # Docker rm
-        print(f'{agent_container_name} Deleted!!\n')
+        # print(f'\nStopping {agent_container_name} ...')
+        # os.system(f"docker stop {agent_container_name}") # Docker Stop
+        # print(f'Deleting {agent_container_name}...')
+        # os.system(f'docker rm {agent_container_name}') # Docker rm
+        # print(f'{agent_container_name} Deleted!!\n')
+        
+        print(f'\nStopping ALL ...')
+        os.system(f"docker kill $(docker ps -aq)") # Docker Stop
+        #print(f'Deleting {agent_container_name}...')
+        os.system(f'docker rm $(docker ps -aq)') # Docker rm
+        #print(f'{agent_container_name} Deleted!!\n')
+        print(f'All Container Deleted')
             
     async def generator_server_open(self, config):
         GEN_IP = config["Generator_config"]["ip"]
