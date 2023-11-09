@@ -38,7 +38,7 @@ class Agentsim():
         self.des_time = int((480 - (self.human_info["hours_worked"])) / 30)
         
         # Register Entity -> Simulation while state
-        worker_model = HumanModel(0, self.des_time, Init.modle_manager_name, Init.ename, self.agent_engine, self.human_info)
+        worker_model = HumanModel(0, self.des_time+1, Init.modle_manager_name, Init.ename, self.agent_engine, self.human_info)
         
         self.agent_engine.register_entity(worker_model)
         

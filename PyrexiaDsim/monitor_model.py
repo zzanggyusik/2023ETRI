@@ -78,7 +78,9 @@ class MonitorModel(BehaviorModelExecutor):
                 
                 # Create Generator, Insert to Engine
                 if human_info["human_id"] not in self.generator_map:
+                    self.mongo_client["human"]["human_info"].update_one({"human_id" : human_info["human_id"]}, {"$set":{"simulation_activate" : False}})
                     self.insert_generator(human_info, human_profile)
+                    
                 
                 # Create Container Generator Model
                 
