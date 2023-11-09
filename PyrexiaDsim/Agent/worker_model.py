@@ -129,7 +129,8 @@ class HumanModel(BehaviorModelExecutor):
             else : prediction = Classifier.GOOD
             
         return prediction 
-            
+    
+    def cal_hb(self):
     
     def cal_health(self):
         #data = self.cur_container_name
