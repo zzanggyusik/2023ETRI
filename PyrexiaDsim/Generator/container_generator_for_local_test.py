@@ -170,7 +170,7 @@ class ContainerGenerator():
         # Preprocessing States
         #worked_time= human_info["worked_times"].split(":")
         worked_time= human_info["worked_times"]
-        states= int(((8 * 60) - (int(worked_time))) / 30)
+        #states= int(((8 * 60) - (int(worked_time))) / 30)
 
         site_id= human_info["site_id"][6:]
         
@@ -202,7 +202,7 @@ class ContainerGenerator():
         weight= human_profile["weight"]
         
         
-        human_info_string= f"{states}_{site_id}_{human_info['health']}_{gender}_{disease}_{height}_{weight}"
+        human_info_string= f"{worked_time}_{site_id}_{human_info['health']}_{gender}_{disease}_{height}_{weight}_98"
         
         return human_info_string
         
