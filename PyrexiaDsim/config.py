@@ -40,6 +40,9 @@ class ContainerGeneratorConfig():
     start= "generator_start"
     fin= "generator_finish"    
     
+    out= "generator_out"
+    
+    
     
 class AgentContainerConfig():
     image_name= "zzanggyusik/pyrexiasim:agent"

@@ -1,4 +1,4 @@
-from pyevsim import BehaviorModelExecutor, Infinite
+from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
 import sys, os
 import zmq
 import json
@@ -31,6 +31,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         # Define Port
         self.insert_input_port(ContainerGeneratorConfig.start)
         self.insert_input_port(ContainerGeneratorConfig.fin)
+        
+        self.insert_output_port(ContainerGeneratorConfig.out)
         
         # Get Human Data
         self.human_info = human_info

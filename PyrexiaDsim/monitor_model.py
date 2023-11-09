@@ -49,7 +49,7 @@ class MonitorModel(BehaviorModelExecutor):
             #TODO refer DB, Create Docker Container
             self.check_db()
 
-            self._cur_state = MonitorModelConfig.IDLE
+            # self._cur_state = MonitorModelConfig.IDLE
             
         elif self._cur_state == MonitorModelConfig.IDLE:
             print("IDLE")
@@ -70,14 +70,21 @@ class MonitorModel(BehaviorModelExecutor):
         # Check if human's simulation_activate field is "True"
         for human_info in human_list:
             if human_info["simulation_activate"] == True:
-                print(f"[Monitor Model]: {human_info['human_id']} - Simulation Activated")
+                
+                # Set simulation_active Flag to False
+                self.mongo_client["human"]["human_info"].update_one({"human_id": human_info["human_id"]}, {"$set":{"simulation_activate": False}})
+                
+                # Get Human Profile
                 human_profile= self.mongo_client["human"]["human_profile"].find_one({"human_id": human_info["human_id"]})
                 
                 
                 # Check Human_Info Map
                 
                 # Create Generator, Insert to Engine
-                if human_info["human_id"] not in self.generator_map:
+                if human_info["human_id"] in self.generator_map:
+                    print(f"[Monitor Model]: {human_info['human_id']} - Already Existed")
+                else:
+                    print(f"[Monitor Model]: {human_info['human_id']} - Simulation Activated")
                     self.insert_generator(human_info, human_profile)
                 
                 # Create Container Generator Model
