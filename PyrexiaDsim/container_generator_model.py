@@ -71,7 +71,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             self.engine.remove_entity(self.human_info["human_id"])
             
-            # self._cur_state = ContainerGeneratorConfig.IDLE
+            self._cur_state = ContainerGeneratorConfig.IDLE
             
         elif self._cur_state == ContainerGeneratorConfig.IDLE:
             print("[Generator Model]: IDLE")
