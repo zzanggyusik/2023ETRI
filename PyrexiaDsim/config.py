@@ -52,6 +52,8 @@ class MongoDBConfig():
     host= "192.168.50.201" # 1
     # host= "121.152.137.202" # 2
     port= 27017
+
+    host_url = "http://192.168.0.241:7000"
     
 class ZMQ_NetworkConfig():
     """

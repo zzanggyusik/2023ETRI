@@ -4,11 +4,11 @@ import zmq
 import json
 from datetime import datetime
 from config import *
-from pymongo import MongoClient, DESCENDING
+#from pymongo import MongoClient, DESCENDING
 from threading import Thread
 import time
 from container_generator_model import ContainerGeneratorModel
-
+from rest_api import RestApi
 
 # For Test - Need Delete!
 from Generator.container_generator import ContainerGenerator
@@ -26,7 +26,8 @@ class MonitorModel(BehaviorModelExecutor):
         self.generator_map= {}
         
         # Init MongoDB
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        #self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        self.mongo_api = RestApi()
         
         # Define State
         self.init_state(MonitorModelConfig.IDLE)
@@ -65,17 +66,21 @@ class MonitorModel(BehaviorModelExecutor):
         # TODO : DB확인해서 Agent Container를 생성할지 확인하고 정보 전달
         print("[Monitor Model]: Monitoring DB...")
         # Read DB
-        human_list= self.mongo_client["human"]["human_info"].find()
+        # human_list= self.mongo_client["human"]["human_info"].find()
+        human_list = self.mongo_api.get_document("human", "human_info", 100)
+
         
         # Check if human's simulation_activate field is "True"
         for human_info in human_list:
             if human_info["simulation_activate"] == True:
                 
                 # Set simulation_active Flag to False
-                self.mongo_client["human"]["human_info"].update_one({"human_id": human_info["human_id"]}, {"$set":{"simulation_activate": False}})
+                #self.mongo_client["human"]["human_info"].update_one({"human_id": human_info["human_id"]}, {"$set":{"simulation_activate": False}})
+                self.mongo_api.put('human','human_info', 'human_id', human_info['human_id'], {"simulation_activate": False})
                 
                 # Get Human Profile
-                human_profile= self.mongo_client["human"]["human_profile"].find_one({"human_id": human_info["human_id"]})
+                # human_profile= self.mongo_client["human"]["human_profile"].find_one({"human_id": human_info["human_id"]})
+                human_profile = self.mongo_api.get('human', 'human_profile', 'human_id', human_info['human_id'])
                 
                 
                 # Check Human_Info Map

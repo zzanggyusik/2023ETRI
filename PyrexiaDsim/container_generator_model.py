@@ -4,7 +4,7 @@ import zmq
 import json
 from datetime import datetime
 from config import *
-from pymongo import MongoClient, DESCENDING
+#from pymongo import MongoClient, DESCENDING
 from threading import Thread
 import time
 
@@ -20,7 +20,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         self.router= self.zmq_router_init()
         
         # # Init MongoDB
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        #self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
         
         # Define State
         self.init_state(ContainerGeneratorConfig.PROCESSING)

@@ -5,7 +5,8 @@ import json
 import random
 from instance.config import *
 from datetime import datetime
-from pymongo import MongoClient, DESCENDING
+#from pymongo import MongoClient, DESCENDING
+from rest_api import RestApi
 
 class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info):
@@ -17,7 +18,8 @@ class HumanModel(BehaviorModelExecutor):
         
         self.destruct_time = destruct_time
         
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        #self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        self.mongo_api = RestApi()
         self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
         # Define State
@@ -79,7 +81,8 @@ class HumanModel(BehaviorModelExecutor):
                 
                 # 밑으로 전부 변경함(11.08)
                 #collection_name= self.cur_container_name + str(datetime.now())
-                self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
+                #self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
+                self.mongo_api.post('pyrexiasim_log',self.col_name, self.result_data)
                 
                 message = {
                     "container_name": self.cur_container_name,
