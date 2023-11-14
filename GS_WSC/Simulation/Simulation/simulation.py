@@ -49,7 +49,6 @@ def save_result(path, data):
         
 if __name__ == '__main__':
     
-        
     if len(sys.argv) > 1:
         config = {
             "result_path" : sys.argv[3],

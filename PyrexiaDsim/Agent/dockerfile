@@ -1,0 +1,10 @@
+FROM python:3.9
+
+COPY . /agent_execute/
+
+WORKDIR /agent_execute
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+WORKDIR /agent_execute
+ENTRYPOINT ["python3", "Agentsim.py"] 
