@@ -8,7 +8,7 @@ class PyrexiaDsimConfig():
     # mode= "VIRTUAL_TIME",
     time_step= 1
     # instance_number= 100
-    instance_number= 10
+    instance_number= 100
     
     engine_name= "pyrexiadsim_engine"
     model_name= "monitor_model"
@@ -49,7 +49,7 @@ class AgentContainerConfig():
     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():
-    host= "192.168.50.201" # 1
+    host= "192.168.50.204" # 1
     # host= "121.152.137.202" # 2
     port= 27017
 

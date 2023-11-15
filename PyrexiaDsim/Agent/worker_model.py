@@ -5,7 +5,7 @@ import json
 import random
 from instance.config import *
 from datetime import datetime
-#from pymongo import MongoClient, DESCENDING
+from pymongo import MongoClient, DESCENDING
 from rest_api import RestApi
 
 class HumanModel(BehaviorModelExecutor):
@@ -13,13 +13,12 @@ class HumanModel(BehaviorModelExecutor):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
     
         self.human_info= human_info
-        
         self.dealer= self.zmq_init()
         
         self.destruct_time = destruct_time
         
-        #self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
-        self.mongo_api = RestApi()
+        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        # self.mongo_api = RestApi()
         self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
         # Define State
@@ -40,7 +39,7 @@ class HumanModel(BehaviorModelExecutor):
         
         self.col_name = str(self.get_col_name())
         
-        self.hb = self.human_info["heart_beat"]
+        
         
     def int_trans(self):
         if self._cur_state == SimulationModelState.PROCESS:
@@ -61,7 +60,7 @@ class HumanModel(BehaviorModelExecutor):
         if self._cur_state == SimulationModelState.PROCESS:
             #TODO refer DB, Create Docker Container
             
-            self.hb = self.cal_hb(self.hb)
+            # self.hb = self.cal_hb(self.hb)
             
             self.cal_health()
             print(self.cur_state_level)
@@ -74,6 +73,7 @@ class HumanModel(BehaviorModelExecutor):
                 self.result_data["human_id"]= self.human_info["human_id"]
                 self.result_data["simulated_id"]= self.human_info["simulated_id"]
                 self.result_data["log"]= self.simulation_log
+                
                 #self.result_data["result_health"]= self.simulation_log[self.cur_state_level - 1]["simulated_health"]
                 #self.result_data["result_prediction"]= self.simulation_log[self.cur_state_level - 1]["prediction"]
                 
@@ -81,8 +81,8 @@ class HumanModel(BehaviorModelExecutor):
                 
                 # 밑으로 전부 변경함(11.08)
                 #collection_name= self.cur_container_name + str(datetime.now())
-                #self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
-                self.mongo_api.post('pyrexiasim_log',self.col_name, self.result_data)
+                self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
+                # self.mongo_api.post('pyrexiasim_log',self.col_name, self.result_data)
                 
                 message = {
                     "container_name": self.cur_container_name,
@@ -117,23 +117,23 @@ class HumanModel(BehaviorModelExecutor):
         prediction = ''
         
         if site_open == Site.OPEN_SPACE.value and site_cowork == Site.COOPERATION.value:
-            if hp < 30 : prediction = Classifier.DANGEROUS
-            elif hp < 50 : prediction = Classifier.WARNING
+            if hp < 15 : prediction = Classifier.DANGEROUS
+            elif hp < 35 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         elif site_open == Site.OPEN_SPACE.value and site_cowork == Site.INDEPENDENT.value:
-            if hp < 40 : prediction = Classifier.DANGEROUS
-            elif hp < 60 : prediction = Classifier.WARNING
+            if hp < 25 : prediction = Classifier.DANGEROUS
+            elif hp < 45 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.COOPERATION.value:
-            if hp < 35 : prediction = Classifier.DANGEROUS
-            elif hp < 55 : prediction = Classifier.WARNING
+            if hp < 20 : prediction = Classifier.DANGEROUS
+            elif hp < 40 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.INDEPENDENT.value:
-            if hp < 55 : prediction = Classifier.DANGEROUS
-            elif hp < 75 : prediction = Classifier.WARNING
+            if hp < 40 : prediction = Classifier.DANGEROUS
+            elif hp < 60 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         return prediction 
@@ -154,7 +154,7 @@ class HumanModel(BehaviorModelExecutor):
         target_site= random.randint(1, 5)
         
         origin_health= round(self.human_info["health"], 3)
-        
+        in_heartrate= self.human_info["heartrate"]
         
                 
         # cur_site에 따른 변화 필요 met = pose 로 간주함
@@ -211,15 +211,27 @@ class HumanModel(BehaviorModelExecutor):
             
         prediction = self.classifier(self.human_info["health"], site_open, site_cowork)
         
-        log["simulation_id"]= f'{self.human_info["human_id"]}{self.cur_state_level}'
+        if self.human_info["health"] < 0:
+            self.human_info["health"] = 0
+            self.cur_state_level = int(self.destruct_time - 1)
+        
+        log["simulated_id"]= self.human_info["simulated_id"]
         log["hours_worked"]= self.human_info["hours_worked"] + (self.cur_state_level) * 30
         log["site_working_hours"]= self.human_info["hours_worked"] + (self.cur_state_level + 1) * 30
         log["source_site"]= source_site
         log["target_site"]= target_site
-        log["moving_speed"]= random.randint(1, 3)
         log["in_health"]= origin_health
         log["out_health"]= round(self.human_info["health"], 3)
+        log["in_heartrate"]= in_heartrate
+        if random.random() > 0.5:
+            log["out_heartrate"]= in_heartrate + int((log["in_health"] - log["out_health"]) // 3)
+        else:
+            log["out_heartrate"]= in_heartrate - int((log["in_health"] - log["out_health"]) // 3)
+        
+        log["moving_speed"]= random.randint(1, 3)
+        
         log["prediction"]= prediction
+        
         
         # Check Log
         print(log)
@@ -227,7 +239,7 @@ class HumanModel(BehaviorModelExecutor):
         self.simulation_log.append(log)
         
         self.human_info["site_id"]= target_site
-    
+        self.human_info["heartrate"]= log["out_heartrate"]
     def num_converter(self, cur_site):
         if cur_site == 1:
             workIntensity = WorkIntensity.MANAGEABLE
