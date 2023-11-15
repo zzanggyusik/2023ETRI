@@ -41,6 +41,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         self.db_insert_list= []
         
         self.instance_count= 0
+
+        self.container_list = []
         
     def ext_trans(self, port, msg):
         if port == ContainerGeneratorConfig.start:
@@ -61,6 +63,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             # Create Agent Containers
             for i in range(PyrexiaDsimConfig.instance_number):
                 agent_container_name = f'{self.human_info["human_id"]}_{i}_' + human_info_string
+                self.container_list.append(agent_container_name)
                 self.run_containers(agent_container_name)            
             
             
@@ -72,6 +75,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             self.engine.remove_entity(self.human_info["human_id"])
             
             self._cur_state = ContainerGeneratorConfig.IDLE
+
+
             
         elif self._cur_state == ContainerGeneratorConfig.IDLE:
             print("[Generator Model]: IDLE")
@@ -166,9 +171,14 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         # print(f'{agent_container_name} Deleted!!\n')
         
         print(f'\nStopping ALL ...')
-        os.system(f"docker kill $(docker ps -aq)") # Docker Stop
+        # os.system(f"docker kill $(docker ps -aq)") # Docker Stop
+        os.system(f"docker kill ${self.container_list}") # Docker Stop
+
         #print(f'Deleting {agent_container_name}...')
-        os.system(f'docker rm $(docker ps -aq)') # Docker rm
+
+        # os.system(f'docker rm $(docker ps -aq)') # Docker rm
+        os.system(f'docker rm ${self.container_list}') # Docker rm
+
         #print(f'{agent_container_name} Deleted!!\n')
         print(f'All Container Deleted')
         

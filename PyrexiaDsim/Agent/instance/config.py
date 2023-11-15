@@ -17,9 +17,10 @@ class AgentContainerConfig():
     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():
-    host= "192.168.50.204" # 1
-    # host= "121.152.137.202" # 2
+    # host= "192.168.50.204" # 1
+    host= "172.17.44.225" # 2
     port= 27017
+    
     host_url = "http://192.168.0.241:7000"
     
 class SimulationModelState():

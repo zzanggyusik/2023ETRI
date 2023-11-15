@@ -7,6 +7,7 @@ from instance.config import *
 from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from rest_api import RestApi
+import certifi
 
 class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info):
@@ -17,7 +18,9 @@ class HumanModel(BehaviorModelExecutor):
         
         self.destruct_time = destruct_time
         
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        # For MAC ENV
+        ca = certifi.where()
+        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port, tlsCAFile=ca)
         # self.mongo_api = RestApi()
         self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
