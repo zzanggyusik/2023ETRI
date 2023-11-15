@@ -8,7 +8,7 @@ class PyrexiaDsimConfig():
     # mode= "VIRTUAL_TIME",
     time_step= 1
     # instance_number= 100
-    instance_number= 3
+    instance_number= 100
     
     engine_name= "pyrexiadsim_engine"
     model_name= "monitor_model"
@@ -30,6 +30,7 @@ class MonitorModelConfig():
     # Model Port
     start= "monitor_start"
     fin= "monitor_finish"
+    model_in= "monitor_in"
     
 class ContainerGeneratorConfig():
     # image_name= "bodlehg/pyrexiasim:generator"

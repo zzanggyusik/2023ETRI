@@ -35,11 +35,19 @@ class MonitorModel(BehaviorModelExecutor):
         self.insert_state(MonitorModelConfig.PROCESSING, 1)
         
         # Define Port
+        self.insert_input_port(MonitorModelConfig.model_in)
         self.insert_input_port(MonitorModelConfig.start)
         self.insert_input_port(MonitorModelConfig.fin)
         
     def ext_trans(self, port, msg):
         if port == MonitorModelConfig.start:
+            self._cur_state = MonitorModelConfig.PROCESSING
+        
+        elif port == MonitorModelConfig.model_in:
+            
+            # Remove Container Generator Model
+            model_name = msg.retrieve()[0]
+            self.engine.remove_entity(model_name)
             self._cur_state = MonitorModelConfig.PROCESSING
         
         elif port == MonitorModelConfig.fin:
@@ -105,7 +113,8 @@ class MonitorModel(BehaviorModelExecutor):
         
         self.engine.register_entity(generator_model)
         print(f"{human_info['human_id']} - Generator Inserted")    
-    
+        self.engine.coupling_relation(generator_model, ContainerGeneratorConfig.out,\
+            self, MonitorModelConfig.model_in)
 
         # coupling relation 
         # self.engine.coupling_relation(generator_model, human_info['id'], self.worker_remove_model, "remove_worker")

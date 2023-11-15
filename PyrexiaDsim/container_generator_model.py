@@ -70,23 +70,26 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             self.check_container_instance(start_time)
             
+            self.mongo_client["pyrexiasim_log"][start_time].insert_many(self.db_insert_list)
+            
             self.stop_containers()
             
-            self.engine.remove_entity(self.human_info["human_id"])
+            # self.engine.remove_entity(self.human_info["human_id"])
             
-            self._cur_state = ContainerGeneratorConfig.IDLE
-
-
+            message = SysMessage(self.get_name(), ContainerGeneratorConfig.out)
+            message.insert(self.get_name())
+            
+            return message
             
         elif self._cur_state == ContainerGeneratorConfig.IDLE:
             print("[Generator Model]: IDLE")
                 
     def int_trans(self):
         if self._cur_state == ContainerGeneratorConfig.PROCESSING:
-            self._cur_state = ContainerGeneratorConfig.PROCESSING
+            self._cur_state = ContainerGeneratorConfig.IDLE
             
         elif self._cur_state == ContainerGeneratorConfig.IDLE:
-            self._cur_state = ContainerGeneratorConfig.IDLE   
+            self._cur_state = ContainerGeneratorConfig.PROCESSING   
         
     def human_data_preprocessing(self):
         # DB에서 human_id에 해당하는 데이터 조회
@@ -153,9 +156,9 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             if message['message'] == 'done':
                 self.instance_count += 1
-                self.db_insert_list.append(message)
+                self.db_insert_list.append(message["data"])
                 
-                print(self.db_insert_list)
+                print(f"{message['container_name']} --> Done")
             
                 if self.instance_count == PyrexiaDsimConfig.instance_number:
                     print("[Generator Model]: All Container Created!")
@@ -170,14 +173,16 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         # os.system(f'docker rm {agent_container_name}') # Docker rm
         # print(f'{agent_container_name} Deleted!!\n')
         
-        print(f'\nStopping ALL ...')
+        # print(f'\nStopping ALL ...')
+        for container_name in self.container_list:
+            print(f"Removing {container_name}")
         # os.system(f"docker kill $(docker ps -aq)") # Docker Stop
-        os.system(f"docker kill ${self.container_list}") # Docker Stop
-
+            os.system(f"docker kill {container_name}") # Docker Stop
+            os.system(f'docker rm {container_name}')
         #print(f'Deleting {agent_container_name}...')
 
         # os.system(f'docker rm $(docker ps -aq)') # Docker rm
-        os.system(f'docker rm ${self.container_list}') # Docker rm
+        # os.system(f'docker rm ${self.container_list}') # Docker rm
 
         #print(f'{agent_container_name} Deleted!!\n')
         print(f'All Container Deleted')

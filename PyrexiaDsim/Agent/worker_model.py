@@ -19,8 +19,8 @@ class HumanModel(BehaviorModelExecutor):
         self.destruct_time = destruct_time
         
         # For MAC ENV
-        ca = certifi.where()
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port, tlsCAFile=ca)
+        # ca = certifi.where()
+        # self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port, tlsCAFile=ca)
         # self.mongo_api = RestApi()
         self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
         
@@ -84,11 +84,12 @@ class HumanModel(BehaviorModelExecutor):
                 
                 # 밑으로 전부 변경함(11.08)
                 #collection_name= self.cur_container_name + str(datetime.now())
-                self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
+                # self.mongo_client["pyrexiasim_log"][self.col_name].insert_one(self.result_data)
                 # self.mongo_api.post('pyrexiasim_log',self.col_name, self.result_data)
                 
                 message = {
                     "container_name": self.cur_container_name,
+                    "data": self.result_data,
                     "message" : "done"
                 }
                 
