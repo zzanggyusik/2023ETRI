@@ -17,7 +17,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         
         # Init ZMQ Socket
         self.context = zmq.Context()
-        self.dealer= self.zmq_dealer_init()
+        # self.dealer= self.zmq_dealer_init()
         self.router= self.zmq_router_init()
         
         # # Init MongoDB
@@ -203,6 +203,6 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         return socket
     
     def zmq_destroy(self):
-        self.dealer.close()
+        # self.dealer.close()
         self.router.close()
         self.context.term()

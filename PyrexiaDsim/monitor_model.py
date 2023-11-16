@@ -9,6 +9,9 @@ from threading import Thread
 import time
 from container_generator_model import ContainerGeneratorModel
 from rest_api import RestApi
+import socket
+import random
+
 
 # For Test - Need Delete!
 from Generator.container_generator import ContainerGenerator
@@ -124,8 +127,14 @@ class MonitorModel(BehaviorModelExecutor):
         # self.engine.coupling_relation(worker_model, "health_info", self.worker_flush_model, "health_info")
         # self.engine.coupling_relation(worker_model, human_info['id'], self.worker_flush_model, "flush")
 
-                
-    
+    def find_free_port(self):
+        while True:
+            port = random.randint(30000, 40000)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = sock.connect_ex(('127.0.0.1', port))
+            sock.close()
+            if result != 0:
+                return port
                 
                 
     ### CASE 1. Docker In Docker
