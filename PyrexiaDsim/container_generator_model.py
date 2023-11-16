@@ -16,6 +16,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         self.engine = engine
         
         # Init ZMQ Socket
+        self.context = zmq.Context()
         self.dealer= self.zmq_dealer_init()
         self.router= self.zmq_router_init()
         
@@ -76,6 +77,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             # self.engine.remove_entity(self.human_info["human_id"])
             
+            # Destroy ZMQ
+            self.zmq_destroy()
             message = SysMessage(self.get_name(), ContainerGeneratorConfig.out)
             message.insert(self.get_name())
             
@@ -188,15 +191,18 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         print(f'All Container Deleted')
         
     def zmq_dealer_init(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.DEALER)
+        socket = self.context.socket(zmq.DEALER)
         socket.connect(f"tcp://{ZMQ_NetworkConfig.generator_d_host}:{ZMQ_NetworkConfig.generator_d_port}")
         
         return socket                
     
     def zmq_router_init(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.ROUTER)
+        socket = self.context.socket(zmq.ROUTER)
         socket.bind(f"tcp://{ZMQ_NetworkConfig.generator_r_host}:{ZMQ_NetworkConfig.generator_r_port}")
         
         return socket
+    
+    def zmq_destroy(self):
+        self.dealer.close()
+        self.router.close()
+        self.context.term()
