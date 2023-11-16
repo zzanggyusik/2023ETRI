@@ -222,7 +222,7 @@ class HumanModel(BehaviorModelExecutor):
             self.cur_state_level = int(self.destruct_time - 1)
         
         log["simulated_id"]= self.human_info["simulated_id"]
-        log["hours_worked"]= self.human_info["hours_worked"] + (self.cur_state_level) * 30
+        log["hours_worked"]= self.human_info["hours_worked"] + (self.cur_state_level) * 30        
         log["site_working_hours"]= self.human_info["hours_worked"] + (self.cur_state_level + 1) * 30
         log["source_site"]= source_site
         log["target_site"]= target_site

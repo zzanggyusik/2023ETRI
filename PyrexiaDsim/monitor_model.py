@@ -50,7 +50,10 @@ class MonitorModel(BehaviorModelExecutor):
             
             # Remove Container Generator Model
             model_name = msg.retrieve()[0]
+            
             self.engine.remove_entity(model_name)
+            del self.generator_map[model_name]
+            
             self._cur_state = MonitorModelConfig.PROCESSING
         
         elif port == MonitorModelConfig.fin:

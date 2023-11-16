@@ -60,7 +60,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             human_info_string= self.human_data_preprocessing()
             print(f'[Generator Model]: human_info_string = {human_info_string}')
             
-            start_time = str(datetime.now())
+            start_time = str(datetime.now().isoformat(timespec="seconds"))
                         
             # Create Agent Containers
             for i in range(PyrexiaDsimConfig.instance_number):
@@ -72,7 +72,9 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             self.check_container_instance(start_time)
             
-            self.mongo_client["pyrexiasim_log"][start_time].insert_many(self.db_insert_list)
+            
+            collection_name = start_time + "/" + self.human_info["human_id"]
+            self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
             
             self.stop_containers()
             
