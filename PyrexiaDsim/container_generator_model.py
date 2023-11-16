@@ -9,11 +9,12 @@ from threading import Thread
 import time
 
 class ContainerGeneratorModel(BehaviorModelExecutor):
-    def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info, human_profile):
+    def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info, human_profile, port):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
         # Init Engine
         self.engine = engine
+        self.port = port
         
         # Init ZMQ Socket
         self.context = zmq.Context()
@@ -141,7 +142,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
         ##### ANSWER: zmq통신을 사용해아될것으로 보임(generator - agent간의 통신 -> 이부분은 agent에 어느정도 고려가 되어있음).
         try :
-            os.system(f"docker run -d -e CONTAINER_NAME={agent_container_name} --name {agent_container_name} {agent_container_image}")
+            os.system(f"docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --name {agent_container_name} {agent_container_image}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Running!!')
 
         except:
@@ -198,7 +199,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
     
     def zmq_router_init(self):
         socket = self.context.socket(zmq.ROUTER)
-        socket.bind(f"tcp://{ZMQ_NetworkConfig.generator_r_host}:{ZMQ_NetworkConfig.generator_r_port}")
+        socket.bind(f"tcp://{ZMQ_NetworkConfig.generator_r_host}:{self.port}")
         
         return socket
     

@@ -15,6 +15,7 @@ class SimulationConfig():
 class AgentContainerConfig():
     image_name= "bodlehg/pyrexiasim:agent"
     get_container_name= "CONTAINER_NAME"
+    get_port="PORT"
     
 class MongoDBConfig():
     # host= "192.168.50.204" # 1

@@ -109,13 +109,14 @@ class MonitorModel(BehaviorModelExecutor):
                 # self.run_gen_container(human['human_id'])
         
     def insert_generator(self, human_info, human_profile):
-        generator_model = ContainerGeneratorModel(0, Infinite, human_info['human_id'], self.engine.get_name(), self.engine, human_info, human_profile)
+        port = self.find_free_port()
+        generator_model = ContainerGeneratorModel(0, Infinite, human_info['human_id'], self.engine.get_name(), self.engine, human_info, human_profile, port)
         self.generator_map[human_info["human_id"]]= generator_model
         
         #self.engine.insert_input_port(self.model_name)
         
         self.engine.register_entity(generator_model)
-        print(f"{human_info['human_id']} - Generator Inserted")    
+        print(f"{human_info['human_id']} - Generator Inserted, binded port = {port}")    
         self.engine.coupling_relation(generator_model, ContainerGeneratorConfig.out,\
             self, MonitorModelConfig.model_in)
 

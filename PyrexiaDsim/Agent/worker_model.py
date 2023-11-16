@@ -13,6 +13,9 @@ class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
     
+        self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
+        self.port = os.getenv(AgentContainerConfig.get_port)
+    
         self.human_info= human_info
         self.dealer= self.zmq_init()
         
@@ -21,8 +24,7 @@ class HumanModel(BehaviorModelExecutor):
         # For MAC ENV
         # ca = certifi.where()
         # self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port, tlsCAFile=ca)
-        # self.mongo_api = RestApi()
-        self.cur_container_name = os.getenv(AgentContainerConfig.get_container_name)
+        # self.mongo_api = RestApi()        
         
         # Define State
         self.init_state(SimulationModelState.IDLE)
@@ -298,7 +300,7 @@ class HumanModel(BehaviorModelExecutor):
     def zmq_init(self):
         context= zmq.Context()
         dealer= context.socket(zmq.DEALER)
-        dealer.connect(f"tcp://{ContainerConfig.host}:{ContainerConfig.port}")
+        dealer.connect(f"tcp://{ContainerConfig.host}:{self.port}")
         
         return dealer
     
