@@ -4,7 +4,7 @@ import zmq
 import json
 from datetime import datetime
 from config import *
-from pymongo import MongoClient, DESCENDING
+from rest_api import RestApi
 from threading import Thread
 import time
 
@@ -22,7 +22,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         self.router= self.zmq_router_init()
         
         # # Init MongoDB
-        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        # self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        self.mongo_api = RestApi()
         
         # Define State
         self.init_state(ContainerGeneratorConfig.PROCESSING)
@@ -74,8 +75,10 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
             
             collection_name = start_time + "/" + self.human_info["human_id"]
-            self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
-            
+            #self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
+            for i in self.db_insert_list:
+                self.mongo_api.post("pyrexiasim_log", collection_name, i)
+
             self.stop_containers()
             
             # self.engine.remove_entity(self.human_info["human_id"])
@@ -144,11 +147,11 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
         ##### ANSWER: zmq통신을 사용해아될것으로 보임(generator - agent간의 통신 -> 이부분은 agent에 어느정도 고려가 되어있음).
         try :
-            os.system(f"docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --name {agent_container_name} {agent_container_image}")
+            os.system(f"sudo docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --privileged --add-host host.docker.internal:host-gateway --name {agent_container_name} {agent_container_image}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Running!!')
 
         except:
-            os.system(f"docker start {agent_container_name}")
+            os.system(f"sudo docker start {agent_container_name}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Starting!!')
         
     def check_container_instance(self, start_time):
@@ -183,8 +186,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         for container_name in self.container_list:
             print(f"Removing {container_name}")
         # os.system(f"docker kill $(docker ps -aq)") # Docker Stop
-            os.system(f"docker kill {container_name}") # Docker Stop
-            os.system(f'docker rm {container_name}')
+            os.system(f"sudo docker kill {container_name}") # Docker Stop
+            os.system(f'sudo docker rm {container_name}')
         #print(f'Deleting {agent_container_name}...')
 
         # os.system(f'docker rm $(docker ps -aq)') # Docker rm
