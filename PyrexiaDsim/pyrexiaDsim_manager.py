@@ -31,3 +31,5 @@ class PyrexiaDsim():
     def start_engine(self) -> None:
         self.pyrexiadsim_engine.insert_external_event(PyrexiaDsimConfig.monitor_start, PyrexiaDsimConfig.monitor_start)
         self.pyrexiadsim_engine.simulate()
+        
+    

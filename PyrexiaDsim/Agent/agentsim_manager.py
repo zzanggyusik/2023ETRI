@@ -33,7 +33,7 @@ class Agentsim():
         self.human_info["disease"] = float(self.cur_container_name[6])
         self.human_info["height"] = float(self.cur_container_name[7])
         self.human_info["weight"] = float(self.cur_container_name[8])
-        self.human_info["heart_beat"] = float(self.cur_container_name[9])
+        self.human_info["heartrate"] = float(self.cur_container_name[9])
         
         self.des_time = int((480 - (self.human_info["hours_worked"])) / 30)
         
