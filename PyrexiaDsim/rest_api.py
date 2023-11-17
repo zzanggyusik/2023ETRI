@@ -20,14 +20,14 @@ class RestApi():
         if id == '':
             URL = f'{self.host}/rest/1.0/{db_name}/{col_name}'
         else :
-            URL = f'{self.host}/rest/1.0/{db_name}/{col_name}?{id_type}={id}'
+            URL = f'{self.host}/rest/1.0/mongodb/document?databaseName={db_name}&collectionName={col_name}&limit=100&condition=%7B%7D'
         res = requests.get(URL)
         res = json.loads(res.text)
         
         return res
         
     def post(self, db_name, col_name, data):
-        URL = f'{self.host}/rest/1.0/{db_name}/{col_name}'
+        URL = f'{self.host}/rest/1.0/mongodb/document?databaseName={db_name}&collectionName={col_name}'
         headers = {'Content-Type': 'application/json; chearset=utf-8'}
         
         res = requests.post(URL, data=json.dumps(data), headers=headers)
