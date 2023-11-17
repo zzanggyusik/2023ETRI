@@ -7,6 +7,7 @@ from config import *
 from pymongo import MongoClient, DESCENDING
 from threading import Thread
 import time
+import asyncio
 
 class ContainerGeneratorModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info, human_profile, port):
@@ -61,12 +62,17 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             print(f'[Generator Model]: human_info_string = {human_info_string}')
             
             start_time = str(datetime.now().isoformat(timespec="seconds"))
-                        
+            
+            # 비동기 처리를 위한 컨테이너 이름 리스트 생성
+            container_generate_list = [f'{self.human_info["human_id"]}_{i}_' + human_info_string for i in range(PyrexiaDsimConfig.instance_number)]
+            
+            asyncio.run(self.async_run_container(container_generate_list))
+            
             # Create Agent Containers
-            for i in range(PyrexiaDsimConfig.instance_number):
-                agent_container_name = f'{self.human_info["human_id"]}_{i}_' + human_info_string
-                self.container_list.append(agent_container_name)
-                self.run_containers(agent_container_name)            
+            # for i in range(PyrexiaDsimConfig.instance_number):
+            #     agent_container_name = f'{self.human_info["human_id"]}_{i}_' + human_info_string
+            #     # self.container_list.append(agent_container_name)
+            #     self.run_containers(agent_container_name)            
             
             
             
@@ -96,7 +102,14 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             
         elif self._cur_state == ContainerGeneratorConfig.IDLE:
             self._cur_state = ContainerGeneratorConfig.PROCESSING   
+    
+    async def async_run_container(self, container_list):
         
+        await asyncio.gather(*[self.run_containers(container_name) for container_name in container_list])
+        
+    
+    
+    
     def human_data_preprocessing(self):
         # DB에서 human_id에 해당하는 데이터 조회
         disease = None
@@ -138,7 +151,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         
         return human_info_string
         
-    def run_containers(self, agent_container_name): 
+    async def run_containers(self, agent_container_name): 
+        await asyncio.sleep(1)
         agent_container_image = AgentContainerConfig.image_name
         
         ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
@@ -150,6 +164,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         except:
             os.system(f"docker start {agent_container_name}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Starting!!')
+        
         
     def check_container_instance(self, start_time):
         while True:
