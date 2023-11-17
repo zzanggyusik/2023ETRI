@@ -7,6 +7,7 @@ from config import *
 from rest_api import RestApi
 from threading import Thread
 import time
+from pymongo import MongoClient
 
 class ContainerGeneratorModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info, human_profile, port):
@@ -22,8 +23,8 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         self.router= self.zmq_router_init()
         
         # # Init MongoDB
-        # self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
-        self.mongo_api = RestApi()
+        self.mongo_client= MongoClient(MongoDBConfig.host, MongoDBConfig.port)
+        #self.mongo_api = RestApi()
         
         # Define State
         self.init_state(ContainerGeneratorConfig.PROCESSING)
@@ -70,9 +71,9 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
             self.check_container_instance(start_time)
             
             collection_name = start_time + "/" + self.human_info["human_id"]
-            #self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
-            for i in self.db_insert_list:
-                self.mongo_api.post("pyrexiasim_log", collection_name, i)
+            self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
+            # for i in self.db_insert_list:
+            #     self.mongo_api.post("pyrexiasim_log", collection_name, i)
 
             self.stop_containers()
             

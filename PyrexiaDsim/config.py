@@ -10,7 +10,7 @@ class PyrexiaDsimConfig():
     # mode= "VIRTUAL_TIME",
     time_step= 1
     # instance_number= 100
-    instance_number= 100
+    instance_number= 20
     
     engine_name= "pyrexiadsim_engine"
     model_name= "monitor_model"
