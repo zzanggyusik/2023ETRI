@@ -98,20 +98,14 @@ class MonitorModel(BehaviorModelExecutor):
                     if human["human_id"] == human_info["human_id"]:
                         human_profile = human
                 
-                
                 # Check Human_Info Map
-                
                 # Create Generator, Insert to Engine
                 if human_info["human_id"] in self.generator_map:
                     print(f"[Monitor Model]: {human_info['human_id']} - Already Existed")
                 else:
                     print(f"[Monitor Model]: {human_info['human_id']} - Simulation Activated")
                     self.insert_generator(human_info, human_profile)
-                
-                # Create Container Generator Model
-                
-                # Create Container Generator
-                # self.run_gen_container(human['human_id'])
+    
         
     def insert_generator(self, human_info, human_profile):
         port = self.find_free_port()
@@ -125,14 +119,6 @@ class MonitorModel(BehaviorModelExecutor):
         self.engine.coupling_relation(generator_model, ContainerGeneratorConfig.out,\
             self, MonitorModelConfig.model_in)
 
-        # coupling relation 
-        # self.engine.coupling_relation(generator_model, human_info['id'], self.worker_remove_model, "remove_worker")
-        # self.engine.coupling_relation(generator_model, 'msg', self.tele_manager, 'alert')
-
-
-        # self.engine.coupling_relation(worker_model, "health_info", self.worker_flush_model, "health_info")
-        # self.engine.coupling_relation(worker_model, human_info['id'], self.worker_flush_model, "flush")
-
     def find_free_port(self):
         while True:
             port = random.randint(30000, 40000)
@@ -141,42 +127,3 @@ class MonitorModel(BehaviorModelExecutor):
             sock.close()
             if result != 0:
                 return port
-                
-                
-    ### CASE 1. Docker In Docker
-    
-    # def run_gen_container(self, human_id):
-    #     # TODO : Generator container 실행
-    #     container_name = human_id
-    #     container_image = ContainerGeneratorConfig.image_name
-        
-    #     try :
-    #         os.system(f"docker run -d -e CONTAINER_NAME={container_name} --privileged --name {container_name} {container_image}")
-    #         print(f'Container {container_name} is Now Running')
-        
-    #     except:
-    #         os.system(f"docker start {container_name}")
-    #         print(f'Container {container_name} is Starting')
-        
-    #     # For Test - Need Delete!
-    #     # Thread(target= ContainerGenerator().main, args= (human_id, )).start()
-        
-    #     while True:
-    #         print("Router - Waiting...")
-    #         identity, message = self.router.recv_multipart()
-            
-    #         message= json.loads(message.decode())
-    #         print(f"From Dealer - {message['container_name']} : {message['message']}")
-            
-    #         break
-        
-    #     time.sleep(3)
-    #     self.router.send_multipart([identity, "checked".encode("utf-8")])
-    #     print("Router - Container Generator Checked")
-        
-    # def zmq_init(self):
-    #     context = zmq.Context() 
-    #     router = context.socket(zmq.ROUTER)
-    #     router.bind(f'tcp://{ZMQ_NetworkConfig.monitor_r_host}:{ZMQ_NetworkConfig.monitor_r_port}')
-        
-    #     return router

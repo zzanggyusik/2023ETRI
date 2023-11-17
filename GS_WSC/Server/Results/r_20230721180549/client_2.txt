@@ -1,3 +1,0 @@
-Task Time : 37.120630741119385
-Scenario : 3
-Seed : 42

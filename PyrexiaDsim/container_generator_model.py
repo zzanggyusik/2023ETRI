@@ -56,8 +56,6 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         
     def output(self):
         if self._cur_state == ContainerGeneratorConfig.PROCESSING:
-            #TODO refer DB, Create Docker Container
-
             human_info_string= self.human_data_preprocessing()
             print(f'[Generator Model]: human_info_string = {human_info_string}')
             
@@ -69,10 +67,7 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
                 self.container_list.append(agent_container_name)
                 self.run_containers(agent_container_name)            
             
-            
-            
             self.check_container_instance(start_time)
-            
             
             collection_name = start_time + "/" + self.human_info["human_id"]
             #self.mongo_client["pyrexiasim_log"][collection_name].insert_many(self.db_insert_list)
@@ -80,8 +75,6 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
                 self.mongo_api.post("pyrexiasim_log", collection_name, i)
 
             self.stop_containers()
-            
-            # self.engine.remove_entity(self.human_info["human_id"])
             
             # Destroy ZMQ
             self.zmq_destroy()
@@ -103,9 +96,6 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
     def human_data_preprocessing(self):
         # DB에서 human_id에 해당하는 데이터 조회
         disease = None
-
-        # Preprocessing States
-        #worked_time= human_info["worked_times"].split(":")
 
         site_id= self.human_info["site_id"][6:]
         
@@ -143,9 +133,6 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         
     def run_containers(self, agent_container_name): 
         agent_container_image = AgentContainerConfig.image_name
-        
-        ##### REVIEW: agnet_container를 생성할 떄 base model의 데이터를 전달하는 방법 고려 필요. ENV, CMD, 통신 등 ...
-        ##### ANSWER: zmq통신을 사용해아될것으로 보임(generator - agent간의 통신 -> 이부분은 agent에 어느정도 고려가 되어있음).
         try :
             os.system(f"sudo docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --privileged --add-host host.docker.internal:host-gateway --name {agent_container_name} {agent_container_image}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Running!!')
@@ -174,26 +161,11 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
                     break        
         
     def stop_containers(self) :
-        
-        ##### REVIEW: 1회성 연산 컨테이너이기 때문에 stop보다 kill이 더 효율적일듯 함(속도, 메모리 측면에서)
-        # print(f'\nStopping {agent_container_name} ...')
-        # os.system(f"docker stop {agent_container_name}") # Docker Stop
-        # print(f'Deleting {agent_container_name}...')
-        # os.system(f'docker rm {agent_container_name}') # Docker rm
-        # print(f'{agent_container_name} Deleted!!\n')
-        
-        # print(f'\nStopping ALL ...')
         for container_name in self.container_list:
             print(f"Removing {container_name}")
-        # os.system(f"docker kill $(docker ps -aq)") # Docker Stop
             os.system(f"sudo docker kill {container_name}") # Docker Stop
             os.system(f'sudo docker rm {container_name}')
-        #print(f'Deleting {agent_container_name}...')
 
-        # os.system(f'docker rm $(docker ps -aq)') # Docker rm
-        # os.system(f'docker rm ${self.container_list}') # Docker rm
-
-        #print(f'{agent_container_name} Deleted!!\n')
         print(f'All Container Deleted')
         
     def zmq_dealer_init(self):
@@ -209,6 +181,5 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
         return socket
     
     def zmq_destroy(self):
-        # self.dealer.close()
         self.router.close()
         self.context.term()
