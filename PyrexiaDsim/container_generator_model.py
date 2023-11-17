@@ -135,11 +135,13 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
     def run_containers(self, agent_container_name): 
         agent_container_image = AgentContainerConfig.image_name
         try :
-            os.system(f"sudo docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --privileged --add-host host.docker.internal:host-gateway --name {agent_container_name} {agent_container_image}")
+            # os.system(f"sudo docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --privileged --add-host host.docker.internal:host-gateway --name {agent_container_name} {agent_container_image}")
+            os.system(f"docker run -d -e CONTAINER_NAME={agent_container_name} -e PORT={self.port} --privileged --add-host host.docker.internal:host-gateway --name {agent_container_name} {agent_container_image}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Running!!')
 
         except:
-            os.system(f"sudo docker start {agent_container_name}")
+            # os.system(f"sudo docker start {agent_container_name}")
+            os.system(f"docker start {agent_container_name}")
             print(f'[Generator Model]: Container {agent_container_name} is Now Starting!!')
         
     def check_container_instance(self, start_time):
@@ -164,8 +166,10 @@ class ContainerGeneratorModel(BehaviorModelExecutor):
     def stop_containers(self) :
         for container_name in self.container_list:
             print(f"Removing {container_name}")
-            os.system(f"sudo docker kill {container_name}") # Docker Stop
-            os.system(f'sudo docker rm {container_name}')
+            # os.system(f"sudo docker kill {container_name}") # Docker Stop
+            os.system(f"docker kill {container_name}") # Docker Stop
+            # os.system(f'sudo docker rm {container_name}')
+            os.system(f'docker rm {container_name}')
 
         print(f'All Container Deleted')
         

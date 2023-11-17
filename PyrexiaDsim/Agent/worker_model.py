@@ -7,7 +7,6 @@ from config import *
 from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from rest_api import RestApi
-import certifi
 
 class HumanModel(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name, engine, human_info):
@@ -123,23 +122,23 @@ class HumanModel(BehaviorModelExecutor):
         prediction = ''
         
         if site_open == Site.OPEN_SPACE.value and site_cowork == Site.COOPERATION.value:
-            if hp < 15 : prediction = Classifier.DANGEROUS
-            elif hp < 35 : prediction = Classifier.WARNING
+            if hp < 10 : prediction = Classifier.DANGEROUS
+            elif hp < 30 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         elif site_open == Site.OPEN_SPACE.value and site_cowork == Site.INDEPENDENT.value:
-            if hp < 25 : prediction = Classifier.DANGEROUS
-            elif hp < 45 : prediction = Classifier.WARNING
-            else : prediction = Classifier.GOOD
-            
-        elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.COOPERATION.value:
             if hp < 20 : prediction = Classifier.DANGEROUS
             elif hp < 40 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
+        elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.COOPERATION.value:
+            if hp < 15 : prediction = Classifier.DANGEROUS
+            elif hp < 35 : prediction = Classifier.WARNING
+            else : prediction = Classifier.GOOD
+            
         elif site_open == Site.CLOSE_SPACE.value and site_cowork == Site.INDEPENDENT.value:
-            if hp < 40 : prediction = Classifier.DANGEROUS
-            elif hp < 60 : prediction = Classifier.WARNING
+            if hp < 25 : prediction = Classifier.DANGEROUS
+            elif hp < 45 : prediction = Classifier.WARNING
             else : prediction = Classifier.GOOD
             
         return prediction 
@@ -217,7 +216,7 @@ class HumanModel(BehaviorModelExecutor):
             
         prediction = self.classifier(self.human_info["health"], site_open, site_cowork)
         
-        if self.human_info["health"] < 0:
+        if self.human_info["health"] <= 0:
             self.human_info["health"] = 0
             self.cur_state_level = int(self.destruct_time - 1)
         
@@ -234,7 +233,7 @@ class HumanModel(BehaviorModelExecutor):
         else:
             log["out_heartrate"]= in_heartrate - int((log["in_health"] - log["out_health"]) // 3)
         
-        log["moving_speed"]= random.randint(1, 3)
+        log["moving_speed"]= round(random.uniform(1, 3), 1)
         
         log["prediction"]= prediction
         

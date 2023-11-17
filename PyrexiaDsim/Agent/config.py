@@ -35,11 +35,11 @@ class ContainerConfig():
     container_name = 'CONTAINER_NAME'
 
 class Smock(Enum):
-    VERY_LIGHT= 1
-    LIGHT= 2
-    MEDIUM= 3
-    HEAVY= 4
-    VERY_HEAVY= 5
+    VERY_LIGHT= 1.0
+    LIGHT= 1.1
+    MEDIUM= 1.2
+    HEAVY= 2.5
+    VERY_HEAVY= 4
     
 class Pose(Enum):
     STANDING= 1
@@ -53,13 +53,13 @@ class Noise(Enum):
     LOUD= 5
     
 class Temperture(Enum):
-    SUITABLE= 1
-    MILD= 2
-    WARM= 3
+    SUITABLE= 1.0
+    MILD= 1.1
+    WARM= 1.2
     # COOL= 3
-    HOT= 4
+    HOT= 2.5
     # COLD= 4
-    SCORCHING= 5
+    SCORCHING= 3.5
     # FREEZEING= 5
     
 class Site(Enum):
