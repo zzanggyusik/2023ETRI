@@ -10,6 +10,9 @@ __pycache__/
 # C extensions
 *.so
 
+# IP/PORT Block
+instance/
+
 #Mac ignore
 .DS_Store
 

@@ -1,7 +1,7 @@
 from pyevsim import BehaviorModelExecutor, SystemSimulator, Infinite
 from worker_model import HumanModel
 import os
-from instance.config import *
+from config import *
 import json
 
 class Agentsim():

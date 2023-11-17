@@ -3,7 +3,7 @@ import sys, os
 import zmq
 import json
 import random
-from instance.config import *
+from config import *
 from datetime import datetime
 from pymongo import MongoClient, DESCENDING
 from rest_api import RestApi

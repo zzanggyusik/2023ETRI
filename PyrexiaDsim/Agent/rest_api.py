@@ -1,6 +1,6 @@
 import requests
 import json
-from instance.config import *
+from config import *
 
 class RestApi():
     def __init__(self):

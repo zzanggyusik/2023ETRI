@@ -1,3 +1,4 @@
+from instance.config import *
 from enum import Enum
 
 class Init():
@@ -15,13 +16,13 @@ class SimulationConfig():
 class AgentContainerConfig():
     image_name= "bodlehg/pyrexiasim:agent"
     get_container_name= "CONTAINER_NAME"
+    get_port="PORT"
     
 class MongoDBConfig():
-    host= "192.168.50.201" # 1
-    # host= "121.152.137.202" # 2
-    port= 27017
+    host= MONGODB_IP # 1
+    port= MONGODB_PORT
 
-    host_url = "http://192.168.0.241:7000"
+    host_url = HOST_URL
     
 class SimulationModelState():
     IDLE = "IDLE"

@@ -1,3 +1,5 @@
+from instance.config import *
+
 class PyrexiaDsimConfig():
     # PATH
     path= "./Simulation/simulation.py"
@@ -51,11 +53,10 @@ class AgentContainerConfig():
     get_container_name= "CONTAINER_NAME"
     
 class MongoDBConfig():
-    # host= "192.168.50.204" # 1
-    host= "172.17.44.225" # 2
-    port= 27017
+    host= MONGODB_IP # 2
+    port= MONGODB_PORT
 
-    host_url = "http://192.168.0.241:7000"
+    host_url = HOST_URL
     
 class ZMQ_NetworkConfig():
     """
